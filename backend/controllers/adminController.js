@@ -1,0 +1,119 @@
+/**
+ * ──────────────────────────────────────────────────────────────
+ *  Admin Controller
+ *  Handles worker verification, job management, and stats.
+ * ──────────────────────────────────────────────────────────────
+ */
+
+const { workers, users, jobs, applications } = require('../models/mockData');
+const { sendResponse } = require('../utils/helpers');
+
+/**
+ * GET /api/admin/workers
+ * Get all workers (with optional status filter via query param).
+ */
+const getWorkers = (req, res) => {
+  const { status } = req.query;
+  let result = [...workers];
+
+  // Filter by status if provided (e.g., ?status=pending)
+  if (status) {
+    result = result.filter((w) => w.status === status);
+  }
+
+  sendResponse(res, 200, true, 'Workers retrieved.', { workers: result });
+};
+
+/**
+ * PUT /api/admin/approve/:id
+ * Approve a pending worker so they can start applying for jobs.
+ */
+const approveWorker = (req, res) => {
+  const workerIndex = workers.findIndex((w) => w.id === req.params.id);
+  if (workerIndex === -1) {
+    return sendResponse(res, 404, false, 'Worker not found.');
+  }
+
+  workers[workerIndex].status = 'approved';
+  workers[workerIndex].approvedAt = new Date().toISOString();
+
+  sendResponse(res, 200, true, 'Worker approved successfully.', {
+    worker: workers[workerIndex]
+  });
+};
+
+/**
+ * PUT /api/admin/reject/:id
+ * Reject a pending worker.
+ */
+const rejectWorker = (req, res) => {
+  const workerIndex = workers.findIndex((w) => w.id === req.params.id);
+  if (workerIndex === -1) {
+    return sendResponse(res, 404, false, 'Worker not found.');
+  }
+
+  workers[workerIndex].status = 'rejected';
+  workers[workerIndex].rejectedAt = new Date().toISOString();
+
+  sendResponse(res, 200, true, 'Worker rejected.', {
+    worker: workers[workerIndex]
+  });
+};
+
+/**
+ * GET /api/admin/jobs
+ * Get ALL jobs on the platform (not just the admin's).
+ */
+const getAllJobs = (req, res) => {
+  sendResponse(res, 200, true, 'All jobs retrieved.', { jobs });
+};
+
+/**
+ * DELETE /api/admin/job/:id
+ * Remove a job from the platform (and its applications).
+ */
+const deleteJob = (req, res) => {
+  const jobIndex = jobs.findIndex((j) => j.id === req.params.id);
+  if (jobIndex === -1) {
+    return sendResponse(res, 404, false, 'Job not found.');
+  }
+
+  const deleted = jobs.splice(jobIndex, 1)[0];
+
+  // Also remove all applications linked to this job
+  for (let i = applications.length - 1; i >= 0; i--) {
+    if (applications[i].jobId === deleted.id) {
+      applications.splice(i, 1);
+    }
+  }
+
+  sendResponse(res, 200, true, 'Job deleted successfully.', { job: deleted });
+};
+
+/**
+ * GET /api/admin/stats
+ * Get platform-wide statistics for the admin dashboard.
+ */
+const getStats = (req, res) => {
+  const stats = {
+    totalUsers: users.filter((u) => u.role === 'user').length,
+    totalWorkers: workers.length,
+    pendingWorkers: workers.filter((w) => w.status === 'pending').length,
+    approvedWorkers: workers.filter((w) => w.status === 'approved').length,
+    totalJobs: jobs.length,
+    openJobs: jobs.filter((j) => j.status === 'open').length,
+    completedJobs: jobs.filter((j) => j.status === 'completed').length,
+    totalApplications: applications.length
+  };
+
+  sendResponse(res, 200, true, 'Stats retrieved.', { stats });
+};
+
+module.exports = {
+  getWorkers,
+  approveWorker,
+  rejectWorker,
+  getAllJobs,
+  deleteJob,
+  getStats
+};
