@@ -45,6 +45,39 @@ async function request(endpoint, options = {}) {
   }
 }
 
+/**
+ * Upload file request wrapper (for multipart/form-data).
+ * Does NOT set Content-Type (let browser set it with boundary).
+ */
+async function uploadRequest(endpoint, formData) {
+  const token = localStorage.getItem('wf_token');
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` })
+        // Don't set Content-Type — browser will set it with boundary
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw { status: response.status, ...data };
+    }
+
+    return data;
+  } catch (error) {
+    if (error.success === false) throw error;
+    throw {
+      success: false,
+      message: error.message || 'Upload failed. Please try again.'
+    };
+  }
+}
+
 // ─── Auth APIs ───────────────────────────────────────────────
 export const authAPI = {
   signup: (data) =>
@@ -118,4 +151,38 @@ export const adminAPI = {
 
   deleteJob: (id) =>
     request(`/admin/job/${id}`, { method: 'DELETE' })
+};
+
+// ─── Profile APIs ────────────────────────────────────────────
+export const profileAPI = {
+  /**
+   * Upload a profile picture.
+   * @param {File} file - The image file to upload
+   */
+  uploadPicture: (file) => {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    return uploadRequest('/profile/upload-picture', formData);
+  },
+
+  /**
+   * Get the current user's profile picture URL.
+   */
+  getMyPicture: () =>
+    request('/profile/my-picture'),
+
+  /**
+   * Delete the current user's profile picture.
+   */
+  deletePicture: () =>
+    request('/profile/picture', { method: 'DELETE' }),
+
+  /**
+   * Update profile details (name, phone, location).
+   */
+  update: (data) =>
+    request('/profile/update', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
 };

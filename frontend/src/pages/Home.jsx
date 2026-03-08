@@ -5,6 +5,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Footer from '../components/Footer';
+import ChatFAB from '../components/ChatFAB';
 
 const services = [
   { icon: 'bi-wrench-adjustable', title: 'Plumbing', desc: 'Pipe fitting, repair & maintenance' },
@@ -275,6 +276,9 @@ export default function Home() {
 
       {/* FOOTER */}
       <Footer variant="public" />
+
+      {/* Floating Chat Button */}
+      <ChatFAB />
     </div>
   );
 }

@@ -20,6 +20,7 @@ import Profile from '../../components/Profile';
 import Footer from '../../components/Footer';
 import ContactPanel from '../../components/ContactPanel';
 import AppDialog from '../../components/AppDialog';
+import ChatFAB from '../../components/ChatFAB';
 import { jobAPI, applicationAPI, authAPI } from '../../services/api';
 
 // ── Sidebar menu items ───────────────────────────────────────
@@ -390,6 +391,9 @@ export default function WorkerDashboard() {
         duration={2500}
         onClose={() => setAppDialog(null)}
       />
+
+      {/* Floating Chat Button */}
+      <ChatFAB />
     </div>
   );
 }

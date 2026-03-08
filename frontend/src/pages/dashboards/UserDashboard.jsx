@@ -21,6 +21,7 @@ import Footer from '../../components/Footer';
 import ContactPanel from '../../components/ContactPanel';
 import AppDialog from '../../components/AppDialog';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import ChatFAB from '../../components/ChatFAB';
 import { jobAPI, applicationAPI } from '../../services/api';
 
 // ── Sidebar menu items ───────────────────────────────────────
@@ -637,6 +638,9 @@ export default function UserDashboard() {
         onConfirm={confirmAction?.onConfirm}
         onCancel={() => setConfirmAction(null)}
       />
+
+      {/* Floating Chat Button */}
+      <ChatFAB />
     </div>
   );
 }
