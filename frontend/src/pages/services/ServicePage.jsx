@@ -245,81 +245,78 @@ export const serviceConfigs = {
   },
 };
 
-// Mock workers data - In production, this would come from API
-const getMockWorkers = (skills) => [
-  {
-    id: 1,
-    name: 'Muhammad Ali',
-    avatar: null,
-    initials: 'MA',
-    skills: skills,
-    experience: '8 years',
-    location: 'Lahore, Pakistan',
-    rating: 4.9,
-    completedJobs: 156,
-    verified: true,
-  },
-  {
-    id: 2,
-    name: 'Hassan Raza',
-    avatar: null,
-    initials: 'HR',
-    skills: skills,
-    experience: '5 years',
-    location: 'Karachi, Pakistan',
-    rating: 4.8,
-    completedJobs: 89,
-    verified: true,
-  },
-  {
-    id: 3,
-    name: 'Usman Khan',
-    avatar: null,
-    initials: 'UK',
-    skills: skills,
-    experience: '12 years',
-    location: 'Islamabad, Pakistan',
-    rating: 5.0,
-    completedJobs: 234,
-    verified: true,
-  },
-  {
-    id: 4,
-    name: 'Ahmed Malik',
-    avatar: null,
-    initials: 'AM',
-    skills: skills,
-    experience: '6 years',
-    location: 'Faisalabad, Pakistan',
-    rating: 4.7,
-    completedJobs: 67,
-    verified: true,
-  },
-  {
-    id: 5,
-    name: 'Bilal Hussain',
-    avatar: null,
-    initials: 'BH',
-    skills: skills,
-    experience: '10 years',
-    location: 'Multan, Pakistan',
-    rating: 4.9,
-    completedJobs: 198,
-    verified: true,
-  },
-  {
-    id: 6,
-    name: 'Imran Shah',
-    avatar: null,
-    initials: 'IS',
-    skills: skills,
-    experience: '4 years',
-    location: 'Peshawar, Pakistan',
-    rating: 4.6,
-    completedJobs: 45,
-    verified: true,
-  },
-];
+// Service-specific workers data for realistic display
+const serviceWorkers = {
+  plumbing: [
+    { id: 1, name: 'Muhammad Aslam', initials: 'MA', experience: '12 years', location: 'Lahore', rating: 4.9, completedJobs: 245, verified: true },
+    { id: 2, name: 'Tariq Mahmood', initials: 'TM', experience: '8 years', location: 'Karachi', rating: 4.8, completedJobs: 178, verified: true },
+    { id: 3, name: 'Zahid Hussain', initials: 'ZH', experience: '15 years', location: 'Islamabad', rating: 5.0, completedJobs: 312, verified: true },
+    { id: 4, name: 'Kamran Ali', initials: 'KA', experience: '6 years', location: 'Faisalabad', rating: 4.7, completedJobs: 98, verified: true },
+    { id: 5, name: 'Naveed Ahmed', initials: 'NA', experience: '10 years', location: 'Multan', rating: 4.9, completedJobs: 189, verified: true },
+    { id: 6, name: 'Shahid Iqbal', initials: 'SI', experience: '7 years', location: 'Rawalpindi', rating: 4.6, completedJobs: 134, verified: true },
+  ],
+  electrical: [
+    { id: 1, name: 'Faisal Mehmood', initials: 'FM', experience: '14 years', location: 'Lahore', rating: 5.0, completedJobs: 287, verified: true },
+    { id: 2, name: 'Rizwan Akbar', initials: 'RA', experience: '9 years', location: 'Karachi', rating: 4.8, completedJobs: 156, verified: true },
+    { id: 3, name: 'Waseem Haider', initials: 'WH', experience: '11 years', location: 'Islamabad', rating: 4.9, completedJobs: 234, verified: true },
+    { id: 4, name: 'Asif Raza', initials: 'AR', experience: '7 years', location: 'Faisalabad', rating: 4.7, completedJobs: 112, verified: true },
+    { id: 5, name: 'Nadeem Shah', initials: 'NS', experience: '13 years', location: 'Peshawar', rating: 4.9, completedJobs: 267, verified: true },
+    { id: 6, name: 'Irfan Malik', initials: 'IM', experience: '5 years', location: 'Sialkot', rating: 4.5, completedJobs: 78, verified: true },
+  ],
+  carpentry: [
+    { id: 1, name: 'Ustad Rafiq', initials: 'UR', experience: '20 years', location: 'Lahore', rating: 5.0, completedJobs: 456, verified: true },
+    { id: 2, name: 'Khalid Javed', initials: 'KJ', experience: '12 years', location: 'Karachi', rating: 4.9, completedJobs: 234, verified: true },
+    { id: 3, name: 'Manzoor Ahmad', initials: 'MA', experience: '16 years', location: 'Rawalpindi', rating: 4.8, completedJobs: 312, verified: true },
+    { id: 4, name: 'Younis Khan', initials: 'YK', experience: '8 years', location: 'Multan', rating: 4.7, completedJobs: 145, verified: true },
+    { id: 5, name: 'Sarfraz Ali', initials: 'SA', experience: '14 years', location: 'Faisalabad', rating: 4.9, completedJobs: 278, verified: true },
+    { id: 6, name: 'Hamid Raza', initials: 'HR', experience: '6 years', location: 'Gujranwala', rating: 4.6, completedJobs: 89, verified: true },
+  ],
+  painting: [
+    { id: 1, name: 'Javed Painter', initials: 'JP', experience: '18 years', location: 'Lahore', rating: 5.0, completedJobs: 389, verified: true },
+    { id: 2, name: 'Arshad Hussain', initials: 'AH', experience: '10 years', location: 'Karachi', rating: 4.8, completedJobs: 198, verified: true },
+    { id: 3, name: 'Saleem Ahmed', initials: 'SA', experience: '13 years', location: 'Islamabad', rating: 4.9, completedJobs: 267, verified: true },
+    { id: 4, name: 'Waqas Ali', initials: 'WA', experience: '7 years', location: 'Faisalabad', rating: 4.7, completedJobs: 123, verified: true },
+    { id: 5, name: 'Nasir Mahmood', initials: 'NM', experience: '15 years', location: 'Multan', rating: 4.9, completedJobs: 312, verified: true },
+    { id: 6, name: 'Tahir Iqbal', initials: 'TI', experience: '5 years', location: 'Rawalpindi', rating: 4.5, completedJobs: 67, verified: true },
+  ],
+  construction: [
+    { id: 1, name: 'Ustad Bashir', initials: 'UB', experience: '25 years', location: 'Lahore', rating: 5.0, completedJobs: 567, verified: true },
+    { id: 2, name: 'Qadir Khan', initials: 'QK', experience: '15 years', location: 'Karachi', rating: 4.9, completedJobs: 345, verified: true },
+    { id: 3, name: 'Munir Ahmad', initials: 'MA', experience: '18 years', location: 'Islamabad', rating: 4.8, completedJobs: 423, verified: true },
+    { id: 4, name: 'Shafiq Masih', initials: 'SM', experience: '12 years', location: 'Faisalabad', rating: 4.7, completedJobs: 234, verified: true },
+    { id: 5, name: 'Akhtar Ali', initials: 'AA', experience: '20 years', location: 'Peshawar', rating: 4.9, completedJobs: 478, verified: true },
+    { id: 6, name: 'Farooq Shah', initials: 'FS', experience: '10 years', location: 'Multan', rating: 4.6, completedJobs: 156, verified: true },
+  ],
+  driving: [
+    { id: 1, name: 'Rashid Driver', initials: 'RD', experience: '15 years', location: 'Lahore', rating: 5.0, completedJobs: 890, verified: true },
+    { id: 2, name: 'Shahbaz Khan', initials: 'SK', experience: '10 years', location: 'Karachi', rating: 4.9, completedJobs: 567, verified: true },
+    { id: 3, name: 'Asad Mahmood', initials: 'AM', experience: '12 years', location: 'Islamabad', rating: 4.8, completedJobs: 678, verified: true },
+    { id: 4, name: 'Zafar Iqbal', initials: 'ZI', experience: '8 years', location: 'Faisalabad', rating: 4.7, completedJobs: 345, verified: true },
+    { id: 5, name: 'Mushtaq Ali', initials: 'MA', experience: '14 years', location: 'Multan', rating: 4.9, completedJobs: 723, verified: true },
+    { id: 6, name: 'Adnan Shah', initials: 'AS', experience: '6 years', location: 'Rawalpindi', rating: 4.5, completedJobs: 234, verified: true },
+  ],
+  gardening: [
+    { id: 1, name: 'Mali Ghulam', initials: 'MG', experience: '20 years', location: 'Lahore', rating: 5.0, completedJobs: 345, verified: true },
+    { id: 2, name: 'Akram Khan', initials: 'AK', experience: '12 years', location: 'Islamabad', rating: 4.9, completedJobs: 234, verified: true },
+    { id: 3, name: 'Ramzan Ali', initials: 'RA', experience: '15 years', location: 'Karachi', rating: 4.8, completedJobs: 289, verified: true },
+    { id: 4, name: 'Sabir Hussain', initials: 'SH', experience: '8 years', location: 'Faisalabad', rating: 4.7, completedJobs: 145, verified: true },
+    { id: 5, name: 'Noor Muhammad', initials: 'NM', experience: '18 years', location: 'Multan', rating: 4.9, completedJobs: 312, verified: true },
+    { id: 6, name: 'Yasir Ahmed', initials: 'YA', experience: '5 years', location: 'Rawalpindi', rating: 4.5, completedJobs: 78, verified: true },
+  ],
+  mechanic: [
+    { id: 1, name: 'Ustad Pervaiz', initials: 'UP', experience: '22 years', location: 'Lahore', rating: 5.0, completedJobs: 678, verified: true },
+    { id: 2, name: 'Sohail Ahmed', initials: 'SA', experience: '14 years', location: 'Karachi', rating: 4.9, completedJobs: 456, verified: true },
+    { id: 3, name: 'Imran Mechanic', initials: 'IM', experience: '16 years', location: 'Islamabad', rating: 4.8, completedJobs: 534, verified: true },
+    { id: 4, name: 'Amir Hussain', initials: 'AH', experience: '10 years', location: 'Faisalabad', rating: 4.7, completedJobs: 289, verified: true },
+    { id: 5, name: 'Bilal Mechanic', initials: 'BM', experience: '18 years', location: 'Multan', rating: 4.9, completedJobs: 567, verified: true },
+    { id: 6, name: 'Kashif Ali', initials: 'KA', experience: '7 years', location: 'Peshawar', rating: 4.6, completedJobs: 178, verified: true },
+  ],
+};
+
+// Get workers for specific service
+const getServiceWorkers = (serviceKey) => {
+  return serviceWorkers[serviceKey] || serviceWorkers.plumbing;
+};
 
 export default function ServicePage({ serviceKey }) {
   const config = serviceConfigs[serviceKey];
@@ -332,8 +329,8 @@ export default function ServicePage({ serviceKey }) {
     // Trigger animations after mount
     setTimeout(() => setIsVisible(true), 100);
     
-    // Load mock workers for this service
-    setWorkers(getMockWorkers(config.skills));
+    // Load service-specific workers
+    setWorkers(getServiceWorkers(serviceKey));
     
     // Scroll to top
     window.scrollTo(0, 0);
