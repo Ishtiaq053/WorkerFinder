@@ -4,7 +4,7 @@
  * Includes logout confirmation dialog.
  */
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ConfirmDialog from './ConfirmDialog';
 import AppDialog from './AppDialog';
@@ -12,8 +12,11 @@ import AppDialog from './AppDialog';
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showLogoutSuccess, setShowLogoutSuccess] = useState(false);
+
+  const isOnDashboard = location.pathname.startsWith('/dashboard');
 
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
@@ -67,11 +70,13 @@ export default function Navbar() {
 
               {isAuthenticated ? (
                 <>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={`/dashboard/${user.role}`}>
-                      <i className="bi bi-speedometer2 me-1"></i>Dashboard
-                    </Link>
-                  </li>
+                  {!isOnDashboard && (
+                    <li className="nav-item">
+                      <Link className="nav-link" to={`/dashboard/${user.role}`}>
+                        <i className="bi bi-speedometer2 me-1"></i>Dashboard
+                      </Link>
+                    </li>
+                  )}
                   <li className="nav-item ms-2">
                     <span
                       className="nav-link"

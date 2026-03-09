@@ -41,6 +41,11 @@ const applyForJob = (req, res) => {
     return sendResponse(res, 403, false, 'Your profile must be approved by admin before applying.');
   }
 
+  // 4b. Check if worker is restricted
+  if (worker.restricted) {
+    return sendResponse(res, 403, false, 'Your account has been restricted. You cannot apply for jobs.');
+  }
+
   // 5. Prevent duplicate applications
   const existing = applications.find(
     (a) => a.jobId === jobId && a.workerId === worker.id

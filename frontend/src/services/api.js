@@ -26,6 +26,17 @@ async function request(endpoint, options = {}) {
 
   try {
     const response = await fetch(`${API_BASE}${endpoint}`, config);
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // Server returned non-JSON (likely HTML error page)
+      throw {
+        success: false,
+        message: 'Server connection error. Please ensure the backend server is running.'
+      };
+    }
+    
     const data = await response.json();
 
     // If the response is not OK, throw the error data
@@ -61,6 +72,15 @@ async function uploadRequest(endpoint, formData) {
       },
       body: formData
     });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw {
+        success: false,
+        message: 'Server connection error. Please ensure the backend server is running.'
+      };
+    }
 
     const data = await response.json();
 
@@ -150,7 +170,13 @@ export const adminAPI = {
     request('/admin/jobs'),
 
   deleteJob: (id) =>
-    request(`/admin/job/${id}`, { method: 'DELETE' })
+    request(`/admin/job/${id}`, { method: 'DELETE' }),
+
+  deleteWorker: (id) =>
+    request(`/admin/worker/${id}`, { method: 'DELETE' }),
+
+  toggleRestriction: (id) =>
+    request(`/admin/worker/${id}/restrict`, { method: 'PUT' })
 };
 
 // ─── Profile APIs ────────────────────────────────────────────

@@ -8,14 +8,14 @@ import Footer from '../components/Footer';
 import ChatFAB from '../components/ChatFAB';
 
 const services = [
-  { icon: 'bi-wrench-adjustable', title: 'Plumbing', desc: 'Pipe fitting, repair & maintenance' },
-  { icon: 'bi-lightning-charge', title: 'Electrical', desc: 'Wiring, installations & fixes' },
-  { icon: 'bi-hammer', title: 'Carpentry', desc: 'Furniture, doors & wood work' },
-  { icon: 'bi-paint-bucket', title: 'Painting', desc: 'Interior & exterior painting' },
-  { icon: 'bi-bricks', title: 'Construction', desc: 'Building, masonry & renovation' },
-  { icon: 'bi-car-front', title: 'Driving', desc: 'Delivery, transport & logistics' },
-  { icon: 'bi-flower1', title: 'Gardening', desc: 'Landscaping & garden care' },
-  { icon: 'bi-gear-wide-connected', title: 'Mechanic', desc: 'Vehicle & machinery repair' },
+  { icon: 'bi-wrench-adjustable', title: 'Plumbing', desc: 'Pipe fitting, repair & maintenance', path: '/services/plumbing' },
+  { icon: 'bi-lightning-charge', title: 'Electrical', desc: 'Wiring, installations & fixes', path: '/services/electrical' },
+  { icon: 'bi-hammer', title: 'Carpentry', desc: 'Furniture, doors & wood work', path: '/services/carpentry' },
+  { icon: 'bi-paint-bucket', title: 'Painting', desc: 'Interior & exterior painting', path: '/services/painting' },
+  { icon: 'bi-bricks', title: 'Construction', desc: 'Building, masonry & renovation', path: '/services/construction' },
+  { icon: 'bi-car-front', title: 'Driving', desc: 'Delivery, transport & logistics', path: '/services/driving' },
+  { icon: 'bi-flower1', title: 'Gardening', desc: 'Landscaping & garden care', path: '/services/gardening' },
+  { icon: 'bi-gear-wide-connected', title: 'Mechanic', desc: 'Vehicle & machinery repair', path: '/services/mechanic' },
 ];
 
 const testimonials = [
@@ -100,10 +100,10 @@ export default function Home() {
                 </h6>
                 <div className="icon-grid">
                   {services.slice(0, 6).map((s) => (
-                    <div className="icon-item" key={s.title}>
+                    <Link to={s.path} className="icon-item" key={s.title}>
                       <i className={`bi ${s.icon}`}></i>
                       <span>{s.title}</span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -126,13 +126,13 @@ export default function Home() {
         <div className="services-marquee-wrapper">
           <div className="services-marquee">
             {[...services, ...services].map((s, idx) => (
-              <div className="service-card" key={`${s.title}-${idx}`}>
+              <Link to={s.path} className="service-card" key={`${s.title}-${idx}`}>
                 <div className="service-icon">
                   <i className={`bi ${s.icon}`}></i>
                 </div>
                 <h6>{s.title}</h6>
                 <p>{s.desc}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -277,8 +277,8 @@ export default function Home() {
       {/* FOOTER */}
       <Footer variant="public" />
 
-      {/* Floating Chat Button */}
-      <ChatFAB />
+      {/* Floating Chat Button - Shows after scrolling past hero section */}
+      <ChatFAB showAfterScroll={true} scrollThreshold={450} />
     </div>
   );
 }

@@ -8,6 +8,8 @@ const {
   getWorkers,
   approveWorker,
   rejectWorker,
+  deleteWorker,
+  toggleRestriction,
   getAllJobs,
   deleteJob,
   getStats
@@ -22,6 +24,8 @@ router.get('/stats', getStats);
 router.get('/workers', getWorkers);
 router.put('/approve/:id', approveWorker);
 router.put('/reject/:id', rejectWorker);
+router.delete('/worker/:id', deleteWorker);
+router.put('/worker/:id/restrict', toggleRestriction);
 router.get('/jobs', getAllJobs);
 router.delete('/job/:id', deleteJob);
 

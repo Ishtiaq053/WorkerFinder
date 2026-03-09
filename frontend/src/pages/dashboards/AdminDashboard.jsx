@@ -370,6 +370,61 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleDeleteWorker = async (workerId) => {
+    setConfirmAction({
+      title: 'Delete Worker?',
+      message: 'Are you sure you want to permanently delete this worker? Their account and all applications will be removed. This cannot be undone.',
+      type: 'danger',
+      icon: 'bi-person-x-fill',
+      onConfirm: async () => {
+        try {
+          await adminAPI.deleteWorker(workerId);
+          setConfirmAction(null);
+          setAppDialog({
+            type: 'success',
+            title: 'Worker Deleted',
+            message: 'The worker account has been permanently removed from the platform.',
+            icon: 'bi-person-x-fill'
+          });
+          fetchData();
+        } catch (err) {
+          setConfirmAction(null);
+          setAlert({ type: 'error', message: err.message });
+        }
+      }
+    });
+  };
+
+  const handleToggleRestriction = async (worker) => {
+    const isRestricting = !worker.restricted;
+    setConfirmAction({
+      title: isRestricting ? 'Restrict Worker?' : 'Unrestrict Worker?',
+      message: isRestricting
+        ? 'This worker will be blocked from seeing jobs and their profile will be hidden from users.'
+        : 'This worker will be able to see jobs and their profile will be visible to users again.',
+      type: isRestricting ? 'warning' : 'info',
+      icon: isRestricting ? 'bi-slash-circle' : 'bi-unlock',
+      onConfirm: async () => {
+        try {
+          await adminAPI.toggleRestriction(worker.id);
+          setConfirmAction(null);
+          setAppDialog({
+            type: isRestricting ? 'warning' : 'success',
+            title: isRestricting ? 'Worker Restricted' : 'Worker Unrestricted',
+            message: isRestricting
+              ? 'The worker has been restricted. They can no longer see jobs or appear in search results.'
+              : 'The worker has been unrestricted and can now browse jobs again.',
+            icon: isRestricting ? 'bi-slash-circle' : 'bi-unlock'
+          });
+          fetchData();
+        } catch (err) {
+          setConfirmAction(null);
+          setAlert({ type: 'error', message: err.message });
+        }
+      }
+    });
+  };
+
   // ── Filtered Data ────────────────────────────────────────
 
   const filteredWorkers = workerFilter
@@ -381,38 +436,68 @@ export default function AdminDashboard() {
   const workerColumns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
-    { key: 'skill', label: 'Skill' },
+    {
+      key: 'skill',
+      label: 'Skill(s)',
+      render: (row) => {
+        const skills = row.skill || '';
+        return skills.split(',').map(s => s.trim()).filter(Boolean).join(', ') || '—';
+      }
+    },
     { key: 'experience', label: 'Experience' },
     { key: 'location', label: 'Location' },
     {
       key: 'status',
       label: 'Status',
       render: (row) => (
-        <span className={`wf-badge badge-${row.status}`}>{row.status}</span>
+        <div className="d-flex flex-column gap-1">
+          <span className={`wf-badge badge-${row.status}`}>{row.status}</span>
+          {row.restricted && (
+            <span className="wf-badge badge-cancelled">Restricted</span>
+          )}
+        </div>
       )
     },
     {
       key: 'actions',
       label: 'Actions',
-      render: (row) =>
-        row.status === 'pending' ? (
-          <div className="d-flex gap-1">
+      render: (row) => (
+        <div className="d-flex gap-1 flex-wrap">
+          {row.status === 'pending' && (
+            <>
+              <button
+                className="btn btn-success-wf"
+                onClick={() => handleApprove(row.id)}
+              >
+                <i className="bi bi-check-lg me-1"></i>Approve
+              </button>
+              <button
+                className="btn btn-danger-wf"
+                onClick={() => handleReject(row.id)}
+              >
+                <i className="bi bi-x-lg me-1"></i>Reject
+              </button>
+            </>
+          )}
+          {row.status === 'approved' && (
             <button
-              className="btn btn-success-wf"
-              onClick={() => handleApprove(row.id)}
+              className={`btn btn-sm ${row.restricted ? 'btn-secondary-wf' : 'btn-outline-wf'}`}
+              onClick={() => handleToggleRestriction(row)}
+              title={row.restricted ? 'Unrestrict this worker' : 'Restrict this worker'}
             >
-              <i className="bi bi-check-lg me-1"></i>Approve
+              <i className={`bi ${row.restricted ? 'bi-unlock' : 'bi-slash-circle'} me-1`}></i>
+              {row.restricted ? 'Unrestrict' : 'Restrict'}
             </button>
-            <button
-              className="btn btn-danger-wf"
-              onClick={() => handleReject(row.id)}
-            >
-              <i className="bi bi-x-lg me-1"></i>Reject
-            </button>
-          </div>
-        ) : (
-          <span className="text-muted">—</span>
-        )
+          )}
+          <button
+            className="btn btn-danger-wf"
+            onClick={() => handleDeleteWorker(row.id)}
+            title="Permanently delete this worker"
+          >
+            <i className="bi bi-trash me-1"></i>Delete
+          </button>
+        </div>
+      )
     }
   ];
 

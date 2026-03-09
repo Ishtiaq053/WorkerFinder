@@ -111,6 +111,7 @@ export default function WorkerDashboard() {
   const isApproved = workerProfile?.status === 'approved';
   const isPending = workerProfile?.status === 'pending';
   const isRejected = workerProfile?.status === 'rejected';
+  const isRestricted = workerProfile?.restricted === true;
 
   const stats = {
     available: availableJobs.length,
@@ -249,6 +250,19 @@ export default function WorkerDashboard() {
           </div>
         )}
 
+        {isRestricted && (
+          <div className="wf-alert wf-alert-error mb-4">
+            <i className="bi bi-slash-circle" style={{ fontSize: '1.5rem' }}></i>
+            <div>
+              <strong>Account Restricted</strong>
+              <p className="mb-0 mt-1">
+                Your account has been restricted by the admin. You cannot browse or
+                apply for jobs at this time. Please contact support for assistance.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* ─── Overview Tab ───────────────────────────── */}
         {activeTab === 'overview' && (
           <div>
@@ -270,14 +284,16 @@ export default function WorkerDashboard() {
                     <h5 className="mb-0 fw-bold">{workerProfile?.name}</h5>
                     <p className="mb-1 text-light-wf">
                       <i className="bi bi-tools me-1"></i>
-                      {workerProfile?.skill} •{' '}
+                      {workerProfile?.skill
+                        ? workerProfile.skill.split(',').map((s) => s.trim()).filter(Boolean).join(', ')
+                        : 'N/A'} •{' '}
                       <i className="bi bi-clock me-1"></i>
                       {workerProfile?.experience} experience •{' '}
                       <i className="bi bi-geo-alt me-1"></i>
                       {workerProfile?.location}
                     </p>
-                    <span className={`wf-badge badge-${workerProfile?.status}`}>
-                      {workerProfile?.status}
+                    <span className={`wf-badge badge-${isRestricted ? 'rejected' : workerProfile?.status}`}>
+                      {isRestricted ? 'restricted' : workerProfile?.status}
                     </span>
                   </div>
                 </div>

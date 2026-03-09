@@ -14,6 +14,18 @@ import UserDashboard from './pages/dashboards/UserDashboard';
 import WorkerDashboard from './pages/dashboards/WorkerDashboard';
 import AdminDashboard from './pages/dashboards/AdminDashboard';
 
+// Service Pages
+import {
+  PlumbingService,
+  ElectricalService,
+  CarpentryService,
+  PaintingService,
+  ConstructionService,
+  DrivingService,
+  GardeningService,
+  MechanicService,
+} from './pages/services';
+
 function App() {
   const { user } = useAuth();
 
@@ -26,6 +38,17 @@ function App() {
         {/* ── Public Routes ────────────────────────────── */}
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
+        
+        {/* ── Service Pages ────────────────────────────── */}
+        <Route path="/services/plumbing" element={<PlumbingService />} />
+        <Route path="/services/electrical" element={<ElectricalService />} />
+        <Route path="/services/carpentry" element={<CarpentryService />} />
+        <Route path="/services/painting" element={<PaintingService />} />
+        <Route path="/services/construction" element={<ConstructionService />} />
+        <Route path="/services/driving" element={<DrivingService />} />
+        <Route path="/services/gardening" element={<GardeningService />} />
+        <Route path="/services/mechanic" element={<MechanicService />} />
+        
         <Route
           path="/login"
           element={user ? <Navigate to={`/dashboard/${user.role}`} /> : <Login />}

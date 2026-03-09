@@ -5,8 +5,27 @@
  * ──────────────────────────────────────────────────────────────
  */
 
-const { jobs, applications, generateId } = require('../models/mockData');
+const { jobs, applications, workers, generateId } = require('../models/mockData');
 const { sendResponse, validateFields } = require('../utils/helpers');
+
+/**
+ * Mapping from worker skill names to job categories.
+ * A worker with a given skill should see jobs in the mapped categories.
+ */
+const skillToCategoryMap = {
+  plumber: ['plumbing'],
+  electrician: ['electrical'],
+  carpenter: ['carpentry'],
+  painter: ['painting'],
+  mason: ['construction'],
+  welder: ['construction', 'repair'],
+  driver: ['driving', 'moving'],
+  cleaner: ['cleaning'],
+  gardener: ['gardening'],
+  mechanic: ['repair'],
+  labourer: ['construction', 'moving', 'cleaning', 'gardening'],
+  other: ['other']
+};
 
 /**
  * POST /api/jobs
@@ -51,10 +70,34 @@ const getUserJobs = (req, res) => {
 
 /**
  * GET /api/jobs/available
- * Get all open jobs (for approved workers to browse).
+ * Get open jobs matching the worker's skills.
+ * Restricted workers see no jobs.
  */
 const getAvailableJobs = (req, res) => {
-  const openJobs = jobs.filter((j) => j.status === 'open');
+  // Find the worker profile for the logged-in user
+  const worker = workers.find((w) => w.userId === req.user.id);
+
+  // If worker is restricted, return empty list
+  if (worker && worker.restricted) {
+    return sendResponse(res, 200, true, 'You are restricted from viewing jobs.', { jobs: [] });
+  }
+
+  let openJobs = jobs.filter((j) => j.status === 'open');
+
+  // If worker has skills, filter jobs by matching categories
+  if (worker && worker.skill) {
+    const workerSkills = worker.skill.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+
+    // Build a set of all matching categories from the worker's skills
+    const matchingCategories = new Set();
+    workerSkills.forEach((skill) => {
+      const categories = skillToCategoryMap[skill] || ['other'];
+      categories.forEach((cat) => matchingCategories.add(cat));
+    });
+
+    openJobs = openJobs.filter((j) => matchingCategories.has(j.category));
+  }
+
   sendResponse(res, 200, true, 'Available jobs retrieved.', { jobs: openJobs });
 };
 

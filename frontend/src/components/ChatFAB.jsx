@@ -5,6 +5,11 @@
  *  Shows a fixed chat icon in the bottom-right corner.
  *  On click it expands to reveal Email and WhatsApp options
  *  that link to the respective communication channels.
+ *
+ *  Props:
+ *    - showAfterScroll: If true, FAB only appears after scrolling
+ *                       past the hero section (for landing page)
+ *    - scrollThreshold: Custom scroll threshold in pixels (default: 500)
  * ──────────────────────────────────────────────────────────────
  */
 import { useState, useRef, useEffect } from 'react';
@@ -15,8 +20,9 @@ const WHATSAPP_MESSAGE = encodeURIComponent(
   'Hi WorkerFinder! I need some help.'
 );
 
-export default function ChatFAB() {
+export default function ChatFAB({ showAfterScroll = false, scrollThreshold = 500 }) {
   const [open, setOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(!showAfterScroll);
   const fabRef = useRef(null);
 
   // Close popup when clicking outside
@@ -30,8 +36,30 @@ export default function ChatFAB() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Handle scroll-based visibility
+  useEffect(() => {
+    if (!showAfterScroll) {
+      setIsVisible(true);
+      return;
+    }
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      setIsVisible(scrollY > scrollThreshold);
+    };
+
+    // Check initial scroll position
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [showAfterScroll, scrollThreshold]);
+
+  // Don't render if not visible
+  if (!isVisible) return null;
+
   return (
-    <div className="chat-fab-wrapper" ref={fabRef}>
+    <div className={`chat-fab-wrapper ${isVisible ? 'visible' : ''}`} ref={fabRef}>
       {/* Options popup */}
       <div className={`chat-fab-popup ${open ? 'show' : ''}`}>
         <div className="chat-fab-popup-header">

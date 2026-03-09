@@ -23,6 +23,8 @@ const skillOptions = [
   { value: 'other', label: 'Other' }
 ];
 
+const MAX_SKILLS = 3;
+
 export default function Signup() {
   const [form, setForm] = useState({
     name: '',
@@ -46,6 +48,34 @@ export default function Signup() {
     if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
+  // Toggle a skill in the comma-separated skill string (max 3 skills)
+  const handleSkillToggle = (skillValue) => {
+    const currentSkills = form.skill ? form.skill.split(',').map((s) => s.trim()).filter(Boolean) : [];
+    let updatedSkills;
+    if (currentSkills.includes(skillValue)) {
+      // Always allow removing a skill
+      updatedSkills = currentSkills.filter((s) => s !== skillValue);
+    } else {
+      // Check if max skills reached
+      if (currentSkills.length >= MAX_SKILLS) {
+        setAlert({
+          type: 'warning',
+          title: 'Maximum Skills Reached',
+          message: `You can only select up to ${MAX_SKILLS} skills. Please remove one to add another.`
+        });
+        return;
+      }
+      updatedSkills = [...currentSkills, skillValue];
+    }
+    setForm({ ...form, skill: updatedSkills.join(',') });
+    if (errors.skill) setErrors({ ...errors, skill: '' });
+  };
+
+  // Get current skills count
+  const getCurrentSkillsCount = () => {
+    return form.skill ? form.skill.split(',').map((s) => s.trim()).filter(Boolean).length : 0;
+  };
+
   // Client-side validation
   const validate = () => {
     const newErrors = {};
@@ -62,7 +92,7 @@ export default function Signup() {
     }
     if (!form.role) newErrors.role = 'Please select a role.';
     if (form.role === 'worker') {
-      if (!form.skill) newErrors.skill = 'Please select a skill.';
+      if (!form.skill) newErrors.skill = 'Please select at least one skill.';
       if (!form.experience.trim()) newErrors.experience = 'Experience is required.';
       if (!form.location.trim()) newErrors.location = 'Location is required.';
     }
@@ -212,18 +242,47 @@ export default function Signup() {
                   <i className="bi bi-tools me-2"></i>Worker Profile Details
                 </h6>
                 <div className="mb-3">
-                  <label className="wf-form-label">Primary Skill <span className="text-danger">*</span></label>
-                  <select
-                    className={`form-select wf-form-control ${errors.skill ? 'border-danger' : ''}`}
-                    name="skill"
-                    value={form.skill}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select your skill</option>
-                    {skillOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
+                  <label className="wf-form-label">
+                    Skills <span className="text-danger">*</span>{' '}
+                    <small className={`${getCurrentSkillsCount() >= MAX_SKILLS ? 'text-warning fw-bold' : 'text-muted'}`}>
+                      (select up to {MAX_SKILLS} skills — {getCurrentSkillsCount()}/{MAX_SKILLS} selected)
+                    </small>
+                  </label>
+                  <div className="d-flex flex-wrap gap-2 mt-1">
+                    {skillOptions.map((opt) => {
+                      const selected = form.skill.split(',').map((s) => s.trim()).includes(opt.value);
+                      const isDisabled = !selected && getCurrentSkillsCount() >= MAX_SKILLS;
+                      return (
+                        <label
+                          key={opt.value}
+                          className={`d-inline-flex align-items-center gap-1 px-3 py-2 rounded-pill border ${
+                            selected 
+                              ? 'bg-primary-wf text-white border-dark' 
+                              : isDisabled 
+                                ? 'bg-light text-muted border-secondary' 
+                                : 'bg-white'
+                          }`}
+                          style={{ 
+                            cursor: isDisabled ? 'not-allowed' : 'pointer', 
+                            fontSize: '0.88rem', 
+                            transition: 'all 0.2s',
+                            opacity: isDisabled ? 0.5 : 1
+                          }}
+                          title={isDisabled ? `Maximum ${MAX_SKILLS} skills allowed` : ''}
+                        >
+                          <input
+                            type="checkbox"
+                            className="d-none"
+                            checked={selected}
+                            onChange={() => handleSkillToggle(opt.value)}
+                            disabled={isDisabled}
+                          />
+                          {selected && <i className="bi bi-check-lg"></i>}
+                          {opt.label}
+                        </label>
+                      );
+                    })}
+                  </div>
                   {errors.skill && <small className="text-danger">{errors.skill}</small>}
                 </div>
                 <div className="mb-3">

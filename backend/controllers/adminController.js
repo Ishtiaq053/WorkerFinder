@@ -61,6 +61,54 @@ const rejectWorker = (req, res) => {
 };
 
 /**
+ * DELETE /api/admin/worker/:id
+ * Delete a worker and their user account, removing all related applications.
+ */
+const deleteWorker = (req, res) => {
+  const workerIndex = workers.findIndex((w) => w.id === req.params.id);
+  if (workerIndex === -1) {
+    return sendResponse(res, 404, false, 'Worker not found.');
+  }
+
+  const deleted = workers.splice(workerIndex, 1)[0];
+
+  // Remove all applications by this worker
+  for (let i = applications.length - 1; i >= 0; i--) {
+    if (applications[i].workerId === deleted.id) {
+      applications.splice(i, 1);
+    }
+  }
+
+  // Remove the user account
+  const userIndex = users.findIndex((u) => u.id === deleted.userId);
+  if (userIndex !== -1) users.splice(userIndex, 1);
+
+  sendResponse(res, 200, true, 'Worker deleted successfully.', { worker: deleted });
+};
+
+/**
+ * PUT /api/admin/worker/:id/restrict
+ * Toggle restriction on a worker. Restricted workers cannot see jobs
+ * and their profiles are hidden from users.
+ */
+const toggleRestriction = (req, res) => {
+  const workerIndex = workers.findIndex((w) => w.id === req.params.id);
+  if (workerIndex === -1) {
+    return sendResponse(res, 404, false, 'Worker not found.');
+  }
+
+  workers[workerIndex].restricted = !workers[workerIndex].restricted;
+  workers[workerIndex].restrictedAt = workers[workerIndex].restricted
+    ? new Date().toISOString()
+    : null;
+
+  const action = workers[workerIndex].restricted ? 'restricted' : 'unrestricted';
+  sendResponse(res, 200, true, `Worker ${action} successfully.`, {
+    worker: workers[workerIndex]
+  });
+};
+
+/**
  * GET /api/admin/jobs
  * Get ALL jobs on the platform (not just the admin's).
  */
@@ -113,6 +161,8 @@ module.exports = {
   getWorkers,
   approveWorker,
   rejectWorker,
+  deleteWorker,
+  toggleRestriction,
   getAllJobs,
   deleteJob,
   getStats

@@ -286,7 +286,7 @@ export default function UserDashboard() {
 
   const applicationColumns = [
     { key: 'workerName', label: 'Worker' },
-    { key: 'workerSkill', label: 'Skill' },
+    { key: 'workerSkill', label: 'Skill', render: (row) => row.workerSkill ? row.workerSkill.split(',').map((s) => s.trim()).filter(Boolean).join(', ') : '—' },
     { key: 'workerExperience', label: 'Experience' },
     {
       key: 'coverNote',
