@@ -1,0 +1,244 @@
+/**
+ * ──────────────────────────────────────────────────────────────
+ *  JobProgressTracker Styles
+ * ──────────────────────────────────────────────────────────────
+ */
+
+/* Horizontal Layout */
+.job-progress-tracker.horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.job-progress-tracker.horizontal .progress-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.job-progress-tracker.horizontal .progress-connector {
+  position: absolute;
+  top: 18px;
+  right: 50%;
+  width: 100%;
+  height: 3px;
+  background: #e0e0e0;
+  z-index: 0;
+}
+
+.job-progress-tracker.horizontal .progress-connector.active {
+  background: linear-gradient(90deg, #28a745 0%, #28a745 100%);
+}
+
+.job-progress-tracker.horizontal .progress-step:first-child .progress-connector {
+  display: none;
+}
+
+/* Vertical Layout */
+.job-progress-tracker.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.job-progress-tracker.vertical .progress-step {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.job-progress-tracker.vertical .progress-step:last-child {
+  padding-bottom: 0;
+}
+
+.job-progress-tracker.vertical .progress-connector {
+  position: absolute;
+  left: 18px;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: #e0e0e0;
+  z-index: 0;
+}
+
+.job-progress-tracker.vertical .progress-connector.active {
+  background: linear-gradient(180deg, #28a745 0%, #28a745 100%);
+}
+
+.job-progress-tracker.vertical .progress-step:first-child .progress-connector {
+  display: none;
+}
+
+.job-progress-tracker.vertical .progress-content {
+  margin-left: 1rem;
+  padding-top: 0.25rem;
+}
+
+/* Progress Icon */
+.progress-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.progress-step.pending .progress-icon {
+  background: #f5f5f5;
+  color: #aaa;
+  border: 2px solid #ddd;
+}
+
+.progress-step.current .progress-icon {
+  background: #fff;
+  color: #0d6efd;
+  border: 3px solid #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.progress-step.completed .progress-icon {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.progress-step.cancelled .progress-icon {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(13, 110, 253, 0.1);
+  }
+}
+
+/* Progress Content */
+.progress-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.progress-step.current .progress-label {
+  color: #0d6efd;
+}
+
+.progress-step.completed .progress-label {
+  color: #28a745;
+}
+
+.progress-step.cancelled .progress-label {
+  color: #dc3545;
+}
+
+.progress-date {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.15rem;
+}
+
+/* Size Variations */
+.job-progress-tracker.size-sm .progress-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+}
+
+.job-progress-tracker.size-sm .progress-label {
+  font-size: 0.75rem;
+}
+
+.job-progress-tracker.size-sm .progress-date {
+  font-size: 0.65rem;
+}
+
+.job-progress-tracker.size-sm.horizontal .progress-connector {
+  top: 14px;
+  height: 2px;
+}
+
+.job-progress-tracker.size-lg .progress-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 1.3rem;
+}
+
+.job-progress-tracker.size-lg .progress-label {
+  font-size: 1rem;
+}
+
+.job-progress-tracker.size-lg .progress-date {
+  font-size: 0.85rem;
+}
+
+.job-progress-tracker.size-lg.horizontal .progress-connector {
+  top: 24px;
+  height: 4px;
+}
+
+/* Status Badge */
+.job-status-badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+  .job-progress-tracker.horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .job-progress-tracker.horizontal .progress-step {
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    padding-bottom: 1.5rem;
+  }
+
+  .job-progress-tracker.horizontal .progress-step:last-child {
+    padding-bottom: 0;
+  }
+
+  .job-progress-tracker.horizontal .progress-connector {
+    position: absolute;
+    left: 18px;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    right: auto;
+  }
+
+  .job-progress-tracker.horizontal .progress-content {
+    margin-left: 1rem;
+    margin-top: 0;
+    padding-top: 0.25rem;
+    align-items: flex-start;
+  }
+}

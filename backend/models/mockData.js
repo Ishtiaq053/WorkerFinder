@@ -34,9 +34,30 @@ let applications = [];
 /** Token store — maps token string → userId (simulates sessions) */
 let tokens = {};
 
+/** Notifications — user notifications for various events */
+let notifications = [];
+
+/** Reviews — ratings and reviews for workers */
+let reviews = [];
+
+/** Saved Jobs — bookmarked/saved jobs by users */
+let savedJobs = [];
+
+/** Activity Logs — admin action audit trail */
+let activityLogs = [];
+
 // ─── ID Generator ────────────────────────────────────────────
 // Simple auto-incrementing counter per entity type
-let counters = { user: 1, worker: 1, job: 1, application: 1 };
+let counters = { 
+  user: 1, 
+  worker: 1, 
+  job: 1, 
+  application: 1,
+  notification: 1,
+  review: 1,
+  saved: 1,
+  log: 1
+};
 
 /**
  * Generate a unique ID for a given entity type.
@@ -54,5 +75,9 @@ module.exports = {
   jobs,
   applications,
   tokens,
+  notifications,
+  reviews,
+  savedJobs,
+  activityLogs,
   generateId
 };

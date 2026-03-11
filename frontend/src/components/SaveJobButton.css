@@ -1,0 +1,111 @@
+/**
+ * ──────────────────────────────────────────────────────────────
+ *  SaveJobButton Styles
+ * ──────────────────────────────────────────────────────────────
+ */
+
+.save-job-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 2px solid #e74c3c;
+  color: #e74c3c;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-job-btn:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.1);
+  transform: scale(1.1);
+}
+
+.save-job-btn.saved {
+  background: #e74c3c;
+  color: white;
+}
+
+.save-job-btn.saved:hover:not(:disabled) {
+  background: #c0392b;
+  border-color: #c0392b;
+}
+
+.save-job-btn.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.save-job-btn:disabled {
+  cursor: not-allowed;
+}
+
+/* Animation for heart */
+.save-job-btn:not(.loading) i {
+  transition: transform 0.2s ease;
+}
+
+.save-job-btn:active:not(:disabled):not(.loading) i {
+  transform: scale(0.8);
+}
+
+.save-job-btn.saved i {
+  animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Size variations */
+.save-btn-sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+}
+
+.save-btn-md {
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+}
+
+.save-btn-lg {
+  width: 48px;
+  height: 48px;
+  font-size: 1.3rem;
+}
+
+/* With text variant */
+.save-job-btn:has(.save-text) {
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  width: auto;
+  height: auto;
+}
+
+.save-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.save-btn-sm:has(.save-text) {
+  padding: 0.25rem 0.75rem;
+}
+
+.save-btn-sm:has(.save-text) .save-text {
+  font-size: 0.8rem;
+}
+
+.save-btn-lg:has(.save-text) {
+  padding: 0.5rem 1.25rem;
+}
+
+.save-btn-lg:has(.save-text) .save-text {
+  font-size: 1rem;
+}

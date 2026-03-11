@@ -7,6 +7,7 @@
 
 const { jobs, applications, workers, generateId } = require('../models/mockData');
 const { sendResponse, validateFields } = require('../utils/helpers');
+const { createNotification } = require('./notificationController');
 
 /**
  * Mapping from worker skill names to job categories.
@@ -143,8 +144,27 @@ const updateJobStatus = (req, res) => {
     return sendResponse(res, 400, false, `Status must be one of: ${validStatuses.join(', ')}`);
   }
 
+  const previousStatus = jobs[jobIndex].status;
   jobs[jobIndex].status = status;
   jobs[jobIndex].updatedAt = new Date().toISOString();
+
+  // If job completed or cancelled, notify assigned worker
+  if (status === 'completed' || status === 'cancelled') {
+    const acceptedApp = applications.find(
+      (a) => a.jobId === req.params.id && a.status === 'accepted'
+    );
+    if (acceptedApp) {
+      const message = status === 'completed'
+        ? `Job "${jobs[jobIndex].title}" has been marked as completed. Thank you for your work!`
+        : `Job "${jobs[jobIndex].title}" has been cancelled.`;
+      createNotification(
+        acceptedApp.userId,
+        message,
+        status === 'completed' ? 'success' : 'warning',
+        { jobId: req.params.id }
+      );
+    }
+  }
 
   sendResponse(res, 200, true, 'Job status updated.', { job: jobs[jobIndex] });
 };

@@ -8,6 +8,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ConfirmDialog from './ConfirmDialog';
 import AppDialog from './AppDialog';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -77,6 +78,10 @@ export default function Navbar() {
                       </Link>
                     </li>
                   )}
+                  {/* Notification Bell */}
+                  <li className="nav-item ms-2">
+                    <NotificationBell />
+                  </li>
                   <li className="nav-item ms-2">
                     <span
                       className="nav-link"

@@ -212,3 +212,173 @@ export const profileAPI = {
       body: JSON.stringify(data)
     })
 };
+
+// ─── Notification APIs ───────────────────────────────────────
+export const notificationAPI = {
+  /**
+   * Get all notifications for the current user.
+   */
+  getAll: () =>
+    request('/notifications'),
+
+  /**
+   * Get unread notification count.
+   */
+  getUnreadCount: () =>
+    request('/notifications/unread-count'),
+
+  /**
+   * Mark a specific notification as read.
+   */
+  markAsRead: (id) =>
+    request(`/notifications/${id}/read`, { method: 'PUT' }),
+
+  /**
+   * Mark all notifications as read.
+   */
+  markAllAsRead: () =>
+    request('/notifications/read-all', { method: 'PUT' }),
+
+  /**
+   * Delete a specific notification.
+   */
+  delete: (id) =>
+    request(`/notifications/${id}`, { method: 'DELETE' }),
+
+  /**
+   * Clear all notifications.
+   */
+  clearAll: () =>
+    request('/notifications', { method: 'DELETE' })
+};
+
+// ─── Review APIs ─────────────────────────────────────────────
+export const reviewAPI = {
+  /**
+   * Create a review for a worker after job completion.
+   */
+  create: (data) =>
+    request('/reviews', { method: 'POST', body: JSON.stringify(data) }),
+
+  /**
+   * Get all reviews for a specific worker.
+   */
+  getWorkerReviews: (workerId) =>
+    request(`/reviews/worker/${workerId}`),
+
+  /**
+   * Get review for a specific job.
+   */
+  getJobReview: (jobId) =>
+    request(`/reviews/job/${jobId}`),
+
+  /**
+   * Update an existing review.
+   */
+  update: (id, data) =>
+    request(`/reviews/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  /**
+   * Delete a review.
+   */
+  delete: (id) =>
+    request(`/reviews/${id}`, { method: 'DELETE' })
+};
+
+// ─── Saved Jobs APIs ─────────────────────────────────────────
+export const savedJobsAPI = {
+  /**
+   * Get all saved jobs for the current user.
+   */
+  getAll: () =>
+    request('/saved-jobs'),
+
+  /**
+   * Get saved jobs count.
+   */
+  getCount: () =>
+    request('/saved-jobs/count'),
+
+  /**
+   * Check if a specific job is saved.
+   */
+  checkIfSaved: (jobId) =>
+    request(`/saved-jobs/check/${jobId}`),
+
+  /**
+   * Toggle save status for a job.
+   */
+  toggle: (jobId) =>
+    request(`/saved-jobs/toggle/${jobId}`, { method: 'POST' }),
+
+  /**
+   * Save a job.
+   */
+  save: (jobId) =>
+    request(`/saved-jobs/${jobId}`, { method: 'POST' }),
+
+  /**
+   * Unsave a job.
+   */
+  unsave: (jobId) =>
+    request(`/saved-jobs/${jobId}`, { method: 'DELETE' })
+};
+
+// ─── Analytics APIs ──────────────────────────────────────────
+export const analyticsAPI = {
+  /**
+   * Get overview stats (auto-detects user role).
+   */
+  getOverview: () =>
+    request('/analytics/overview'),
+
+  /**
+   * Get admin dashboard statistics.
+   */
+  getAdminStats: () =>
+    request('/analytics/admin'),
+
+  /**
+   * Get worker statistics.
+   */
+  getWorkerStats: (workerId) =>
+    request(workerId ? `/analytics/worker/${workerId}` : '/analytics/worker'),
+
+  /**
+   * Get user (job poster) statistics.
+   */
+  getUserStats: (userId) =>
+    request(userId ? `/analytics/user/${userId}` : '/analytics/user')
+};
+
+// ─── Activity Logs APIs ──────────────────────────────────────
+export const logsAPI = {
+  /**
+   * Get activity logs with optional filters.
+   */
+  getAll: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return request(`/admin/logs${queryString ? `?${queryString}` : ''}`);
+  },
+
+  /**
+   * Get logs summary/statistics.
+   */
+  getSummary: (days = 7) =>
+    request(`/admin/logs/summary?days=${days}`),
+
+  /**
+   * Get list of action types.
+   */
+  getActionTypes: () =>
+    request('/admin/logs/actions'),
+
+  /**
+   * Clear old logs.
+   */
+  clearOld: (daysOld = 30) =>
+    request('/admin/logs/clear', {
+      method: 'DELETE',
+      body: JSON.stringify({ daysOld })
+    })
+};

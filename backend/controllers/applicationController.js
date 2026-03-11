@@ -7,6 +7,7 @@
 
 const { applications, jobs, workers, generateId } = require('../models/mockData');
 const { sendResponse, validateFields } = require('../utils/helpers');
+const { createNotification } = require('./notificationController');
 
 /**
  * POST /api/applications
@@ -70,6 +71,15 @@ const applyForJob = (req, res) => {
   };
 
   applications.push(newApplication);
+
+  // Notify the job poster about the new application
+  createNotification(
+    job.postedBy || job.userId,
+    `New application received for "${job.title}" from ${worker.name}`,
+    'info',
+    { jobId, applicationId: newApplication.id }
+  );
+
   sendResponse(res, 201, true, 'Application submitted successfully.', {
     application: newApplication
   });
@@ -128,6 +138,18 @@ const updateApplicationStatus = (req, res) => {
       jobs[jobIndex].updatedAt = new Date().toISOString();
     }
   }
+
+  // 6. Notify the worker about the application status
+  const notificationMessage = status === 'accepted'
+    ? `Great news! Your application for "${job.title}" has been accepted!`
+    : `Your application for "${job.title}" was not selected.`;
+  
+  createNotification(
+    applications[appIndex].userId,
+    notificationMessage,
+    status === 'accepted' ? 'success' : 'info',
+    { jobId: job.id, applicationId: applications[appIndex].id }
+  );
 
   sendResponse(res, 200, true, `Application ${status}.`, {
     application: applications[appIndex]

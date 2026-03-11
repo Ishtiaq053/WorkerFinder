@@ -13,6 +13,7 @@ import Contact from './pages/Contact';
 import UserDashboard from './pages/dashboards/UserDashboard';
 import WorkerDashboard from './pages/dashboards/WorkerDashboard';
 import AdminDashboard from './pages/dashboards/AdminDashboard';
+import SavedJobsPage from './pages/SavedJobsPage';
 
 // Service Pages
 import {
@@ -72,6 +73,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['worker']}>
               <WorkerDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/saved-jobs"
+          element={
+            <ProtectedRoute allowedRoles={['worker']}>
+              <SavedJobsPage />
             </ProtectedRoute>
           }
         />

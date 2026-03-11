@@ -7,6 +7,8 @@
 
 const { workers, users, jobs, applications } = require('../models/mockData');
 const { sendResponse } = require('../utils/helpers');
+const { logActivity } = require('./logsController');
+const { createNotification } = require('./notificationController');
 
 /**
  * GET /api/admin/workers
@@ -37,6 +39,19 @@ const approveWorker = (req, res) => {
   workers[workerIndex].status = 'approved';
   workers[workerIndex].approvedAt = new Date().toISOString();
 
+  // Log activity
+  logActivity(req.user.id, 'approve_worker', 'worker', req.params.id, {
+    name: workers[workerIndex].name || workers[workerIndex].fullName
+  });
+
+  // Notify the worker
+  createNotification(
+    workers[workerIndex].userId || req.params.id,
+    'Congratulations! Your worker profile has been approved. You can now apply for jobs.',
+    'success',
+    { workerId: req.params.id }
+  );
+
   sendResponse(res, 200, true, 'Worker approved successfully.', {
     worker: workers[workerIndex]
   });
@@ -55,6 +70,19 @@ const rejectWorker = (req, res) => {
   workers[workerIndex].status = 'rejected';
   workers[workerIndex].rejectedAt = new Date().toISOString();
 
+  // Log activity
+  logActivity(req.user.id, 'reject_worker', 'worker', req.params.id, {
+    name: workers[workerIndex].name || workers[workerIndex].fullName
+  });
+
+  // Notify the worker
+  createNotification(
+    workers[workerIndex].userId || req.params.id,
+    'Your worker profile was not approved. Please contact support for more information.',
+    'error',
+    { workerId: req.params.id }
+  );
+
   sendResponse(res, 200, true, 'Worker rejected.', {
     worker: workers[workerIndex]
   });
@@ -71,6 +99,11 @@ const deleteWorker = (req, res) => {
   }
 
   const deleted = workers.splice(workerIndex, 1)[0];
+
+  // Log activity
+  logActivity(req.user.id, 'delete_worker', 'worker', req.params.id, {
+    name: deleted.name || deleted.fullName
+  });
 
   // Remove all applications by this worker
   for (let i = applications.length - 1; i >= 0; i--) {
@@ -103,6 +136,23 @@ const toggleRestriction = (req, res) => {
     : null;
 
   const action = workers[workerIndex].restricted ? 'restricted' : 'unrestricted';
+
+  // Log activity
+  logActivity(req.user.id, `${action}_worker`, 'worker', req.params.id, {
+    name: workers[workerIndex].name || workers[workerIndex].fullName
+  });
+
+  // Notify the worker
+  const message = workers[workerIndex].restricted
+    ? 'Your account has been restricted. Please contact support for more information.'
+    : 'Your account restriction has been lifted. You can now access all features.';
+  createNotification(
+    workers[workerIndex].userId || req.params.id,
+    message,
+    workers[workerIndex].restricted ? 'warning' : 'success',
+    { workerId: req.params.id }
+  );
+
   sendResponse(res, 200, true, `Worker ${action} successfully.`, {
     worker: workers[workerIndex]
   });
@@ -127,6 +177,19 @@ const deleteJob = (req, res) => {
   }
 
   const deleted = jobs.splice(jobIndex, 1)[0];
+
+  // Log activity
+  logActivity(req.user.id, 'delete_job', 'job', req.params.id, {
+    name: deleted.title
+  });
+
+  // Notify the job poster
+  createNotification(
+    deleted.postedBy,
+    `Your job "${deleted.title}" has been removed by an administrator.`,
+    'warning',
+    { jobId: req.params.id }
+  );
 
   // Also remove all applications linked to this job
   for (let i = applications.length - 1; i >= 0; i--) {

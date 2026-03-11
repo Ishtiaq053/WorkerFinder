@@ -1,0 +1,227 @@
+/**
+ * ──────────────────────────────────────────────────────────────
+ *  NotificationBell Styles
+ * ──────────────────────────────────────────────────────────────
+ */
+
+.notification-bell {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-bell-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary-color, #e67e22);
+  font-size: 1.4rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.notification-bell-btn:hover {
+  color: var(--primary-dark, #d35400);
+  transform: scale(1.1);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #dc3545;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.2;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 360px;
+  max-height: 480px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 1050;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-header h6 {
+  font-weight: 600;
+}
+
+.notification-actions {
+  display: flex;
+  align-items: center;
+}
+
+.notification-actions button {
+  font-size: 1rem;
+}
+
+.notification-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+.notification-item:hover {
+  background: #f8f9fa;
+}
+
+.notification-item.unread {
+  background: #f0f7ff;
+  border-left: 3px solid #0d6efd;
+}
+
+.notification-item.unread:hover {
+  background: #e6f0ff;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f8f9fa;
+  margin-right: 0.75rem;
+}
+
+.notification-icon i {
+  font-size: 1rem;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-message {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.notification-item.unread .notification-message {
+  font-weight: 500;
+}
+
+.notification-time {
+  color: #888;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.notification-delete {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: #aaa;
+  padding: 0.25rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.notification-item:hover .notification-delete {
+  opacity: 1;
+}
+
+.notification-delete:hover {
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.notification-footer {
+  padding: 0.75rem 1.25rem;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+/* Mobile responsive */
+@media (max-width: 576px) {
+  .notification-dropdown {
+    width: 300px;
+    right: -50px;
+  }
+}

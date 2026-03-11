@@ -1,0 +1,155 @@
+/**
+ * ──────────────────────────────────────────────────────────────
+ *  StarRating Styles
+ * ──────────────────────────────────────────────────────────────
+ */
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.star-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin-right: 0.25rem;
+}
+
+.stars-container {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star-wrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.star-wrapper.interactive {
+  cursor: pointer;
+}
+
+.star-wrapper.interactive:hover .star-empty i,
+.star-wrapper.interactive:hover .star-filled i {
+  transform: scale(1.15);
+}
+
+.star-empty,
+.star-filled {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.star-empty {
+  color: #ddd;
+}
+
+.star-filled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  color: #ffc107;
+}
+
+.star-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.star-count {
+  color: #888;
+  font-size: 0.85em;
+}
+
+/* Size variations */
+.star-rating-xs .star-wrapper i {
+  font-size: 0.75rem;
+}
+.star-rating-xs .star-value,
+.star-rating-xs .star-count {
+  font-size: 0.75rem;
+}
+
+.star-rating-sm .star-wrapper i {
+  font-size: 0.9rem;
+}
+.star-rating-sm .star-value,
+.star-rating-sm .star-count {
+  font-size: 0.85rem;
+}
+
+.star-rating-md .star-wrapper i {
+  font-size: 1.1rem;
+}
+.star-rating-md .star-value,
+.star-rating-md .star-count {
+  font-size: 0.95rem;
+}
+
+.star-rating-lg .star-wrapper i {
+  font-size: 1.5rem;
+}
+.star-rating-lg .star-value,
+.star-rating-lg .star-count {
+  font-size: 1.1rem;
+}
+
+.star-rating-xl .star-wrapper i {
+  font-size: 2rem;
+}
+.star-rating-xl .star-value,
+.star-rating-xl .star-count {
+  font-size: 1.25rem;
+}
+
+/* Rating Breakdown */
+.rating-breakdown {
+  width: 100%;
+  max-width: 300px;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rating-stars-label {
+  width: 50px;
+  font-size: 0.85rem;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.rating-bar-container {
+  flex: 1;
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rating-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ffc107 0%, #ffca2c 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.rating-count {
+  width: 25px;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.rating-percentage {
+  width: 40px;
+  font-size: 0.75rem;
+  color: #888;
+}

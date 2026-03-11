@@ -15,6 +15,11 @@ const jobRoutes = require('./routes/jobRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const savedJobsRoutes = require('./routes/savedJobsRoutes');
+const logsRoutes = require('./routes/logsRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -35,6 +40,11 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/saved-jobs', savedJobsRoutes);
+app.use('/api/admin/logs', logsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -1,0 +1,187 @@
+/**
+ * ──────────────────────────────────────────────────────────────
+ *  ActivityLogs Styles
+ * ──────────────────────────────────────────────────────────────
+ */
+
+.activity-logs {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.logs-header h5 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+/* Filters */
+.logs-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.logs-filters .filter-group {
+  flex: 1;
+  min-width: 140px;
+}
+
+.logs-filters .form-select,
+.logs-filters .form-control {
+  border-radius: 6px;
+}
+
+/* Logs List */
+.logs-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.logs-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.logs-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.log-item:hover {
+  background: #f8f9fa;
+}
+
+.log-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.log-icon i {
+  font-size: 1rem;
+}
+
+.log-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.log-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.log-action strong {
+  color: #333;
+}
+
+.log-action-text {
+  color: #666;
+}
+
+.log-target {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.log-details {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+.log-time {
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Loading & Empty States */
+.logs-loading,
+.logs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: #888;
+}
+
+.logs-empty i {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+}
+
+.logs-empty p {
+  margin: 0;
+}
+
+/* Pagination */
+.logs-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .activity-logs {
+    padding: 1rem;
+  }
+
+  .logs-filters .filter-group {
+    min-width: 100%;
+  }
+
+  .log-item {
+    flex-wrap: wrap;
+  }
+
+  .log-time {
+    width: 100%;
+    margin-top: 0.25rem;
+    padding-left: calc(36px + 0.75rem);
+  }
+}
