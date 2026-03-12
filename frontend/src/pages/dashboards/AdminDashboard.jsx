@@ -19,12 +19,14 @@ import Profile from '../../components/Profile';
 import Footer from '../../components/Footer';
 import AppDialog from '../../components/AppDialog';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import AdminVerificationPanel from '../../components/AdminVerificationPanel';
 import { adminAPI } from '../../services/api';
 
 // ── Sidebar menu items ───────────────────────────────────────
 const sidebarItems = [
   { key: 'overview', label: 'Overview', icon: 'grid' },
   { key: 'workers', label: 'Manage Workers', icon: 'people' },
+  { key: 'verification', label: 'Verification Requests', icon: 'shield-check' },
   { key: 'jobs', label: 'Manage Jobs', icon: 'briefcase' },
   { key: 'messages', label: 'Messages', icon: 'chat-dots' },
   { key: 'profile', label: 'Profile', icon: 'person-circle' }
@@ -686,6 +688,25 @@ export default function AdminDashboard() {
                 />
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ─── Verification Requests Tab ──────────────── */}
+        {activeTab === 'verification' && (
+          <div>
+            <h4 className="section-title">
+              <i className="bi bi-shield-check me-2"></i>Worker Verification Requests
+            </h4>
+            <AdminVerificationPanel 
+              onAction={(action, data) => {
+                setAppDialog({
+                  type: action === 'approve' ? 'success' : action === 'reject' ? 'warning' : 'info',
+                  title: action === 'approve' ? 'Verification Approved' : action === 'reject' ? 'Verification Rejected' : 'Request Deleted',
+                  message: `Worker verification has been ${action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'deleted'} successfully.`,
+                  icon: action === 'approve' ? 'check-circle' : action === 'reject' ? 'x-circle' : 'trash'
+                });
+              }}
+            />
           </div>
         )}
 

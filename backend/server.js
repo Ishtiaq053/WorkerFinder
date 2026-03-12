@@ -20,6 +20,9 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const savedJobsRoutes = require('./routes/savedJobsRoutes');
 const logsRoutes = require('./routes/logsRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const skillsRoutes = require('./routes/skillsRoutes');
+const verificationRoutes = require('./routes/verificationRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -45,6 +48,9 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/saved-jobs', savedJobsRoutes);
 app.use('/api/admin/logs', logsRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/skills', skillsRoutes);
+app.use('/api/verification', verificationRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

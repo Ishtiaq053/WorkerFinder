@@ -7,6 +7,8 @@
  *    - Browse available jobs (only if approved)
  *    - Apply for jobs with cover note
  *    - View own applications and their status
+ *    - Verification submission
+ *    - View feedbacks received
  * ──────────────────────────────────────────────────────────────
  */
 import { useState, useEffect, useCallback } from 'react';
@@ -21,13 +23,17 @@ import Footer from '../../components/Footer';
 import ContactPanel from '../../components/ContactPanel';
 import AppDialog from '../../components/AppDialog';
 import ChatFAB from '../../components/ChatFAB';
-import { jobAPI, applicationAPI, authAPI } from '../../services/api';
+import VerificationForm from '../../components/VerificationForm';
+import StarRating from '../../components/StarRating';
+import { jobAPI, applicationAPI, authAPI, feedbackAPI } from '../../services/api';
 
 // ── Sidebar menu items ───────────────────────────────────────
 const sidebarItems = [
   { key: 'overview', label: 'Overview', icon: 'grid' },
   { key: 'browse-jobs', label: 'Browse Jobs', icon: 'search' },
   { key: 'my-applications', label: 'My Applications', icon: 'file-earmark-text' },
+  { key: 'verification', label: 'Verification', icon: 'shield-check' },
+  { key: 'feedbacks', label: 'My Reviews', icon: 'star' },
   { key: 'profile', label: 'Profile', icon: 'person-circle' },
   { key: 'contact', label: 'Contact Us', icon: 'envelope' }
 ];
@@ -38,6 +44,8 @@ export default function WorkerDashboard() {
   const [workerProfile, setWorkerProfile] = useState(null);
   const [availableJobs, setAvailableJobs] = useState([]);
   const [myApplications, setMyApplications] = useState([]);
+  const [myFeedbacks, setMyFeedbacks] = useState([]);
+  const [myRating, setMyRating] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
   const [appDialog, setAppDialog] = useState(null);
@@ -74,6 +82,16 @@ export default function WorkerDashboard() {
     }
   }, []);
 
+  const fetchMyFeedbacks = useCallback(async () => {
+    try {
+      const res = await feedbackAPI.getMyFeedbacks();
+      setMyFeedbacks(res.data.feedbacks || []);
+      setMyRating(res.data.rating || null);
+    } catch (err) {
+      console.log('Cannot fetch feedbacks:', err.message);
+    }
+  }, []);
+
   // Load all data on mount
   useEffect(() => {
     const loadData = async () => {
@@ -81,10 +99,11 @@ export default function WorkerDashboard() {
       await fetchProfile();
       await fetchJobs();
       await fetchMyApplications();
+      await fetchMyFeedbacks();
       setLoading(false);
     };
     loadData();
-  }, [fetchProfile, fetchJobs, fetchMyApplications]);
+  }, [fetchProfile, fetchJobs, fetchMyApplications, fetchMyFeedbacks]);
 
   // ── Action Handlers ──────────────────────────────────────
 
@@ -369,6 +388,128 @@ export default function WorkerDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ─── Verification Tab ────────────────────────── */}
+        {activeTab === 'verification' && (
+          <div>
+            <h4 className="section-title">
+              <i className="bi bi-shield-check me-2"></i>Identity Verification
+            </h4>
+            <VerificationForm 
+              onSuccess={() => {
+                setAppDialog({
+                  type: 'success',
+                  title: 'Verification Submitted',
+                  message: 'Your verification request has been submitted. Admin will review it soon.',
+                  icon: 'check-circle'
+                });
+                fetchProfile(); // Refresh profile to get updated verification status
+              }}
+            />
+          </div>
+        )}
+
+        {/* ─── Feedbacks Tab ────────────────────────────── */}
+        {activeTab === 'feedbacks' && (
+          <div>
+            <h4 className="section-title">
+              <i className="bi bi-star me-2"></i>My Reviews & Rating
+            </h4>
+            
+            {/* Rating Summary Card */}
+            <div className="wf-card mb-4">
+              <div className="card-body">
+                <div className="row align-items-center">
+                  <div className="col-md-4 text-center border-end">
+                    <h2 className="display-4 fw-bold text-warning mb-0">
+                      {myRating?.finalScore?.toFixed(1) || '0.0'}
+                    </h2>
+                    <StarRating rating={myRating?.finalScore || 0} />
+                    <p className="text-muted mb-0 mt-2">
+                      Based on {myRating?.reviewCount || 0} reviews
+                    </p>
+                  </div>
+                  <div className="col-md-8">
+                    <div className="row text-center">
+                      <div className="col-4">
+                        <h4 className="fw-bold text-primary mb-0">
+                          {myRating?.averageRating?.toFixed(1) || '0.0'}
+                        </h4>
+                        <small className="text-muted">Avg Rating</small>
+                      </div>
+                      <div className="col-4">
+                        <h4 className="fw-bold text-danger mb-0">
+                          {myRating?.totalDemerits || 0}
+                        </h4>
+                        <small className="text-muted">Total Demerits</small>
+                      </div>
+                      <div className="col-4">
+                        <h4 className={`fw-bold mb-0 ${workerProfile?.verified ? 'text-success' : 'text-secondary'}`}>
+                          <i className={`bi bi-${workerProfile?.verified ? 'check-circle-fill' : 'x-circle'}`}></i>
+                        </h4>
+                        <small className="text-muted">
+                          {workerProfile?.verified ? 'Verified' : 'Not Verified'}
+                        </small>
+                      </div>
+                    </div>
+                    <hr />
+                    <p className="text-muted mb-0 small">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Your final score is calculated as: Average Rating - (Demerits × 0.1). 
+                      Maintain quality work to keep your rating high!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews List */}
+            <div className="wf-card">
+              <div className="card-header bg-light">
+                <h5 className="mb-0">
+                  <i className="bi bi-chat-quote me-2"></i>Customer Reviews
+                </h5>
+              </div>
+              <div className="card-body">
+                {myFeedbacks.length === 0 ? (
+                  <div className="text-center py-4">
+                    <i className="bi bi-star display-4 text-muted"></i>
+                    <h5 className="mt-3">No Reviews Yet</h5>
+                    <p className="text-muted">
+                      Complete jobs successfully to receive reviews from customers.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="reviews-list">
+                    {myFeedbacks.map((fb, index) => (
+                      <div key={fb.id || index} className={`review-item ${index > 0 ? 'border-top pt-3 mt-3' : ''}`}>
+                        <div className="d-flex justify-content-between align-items-start">
+                          <div>
+                            <div className="d-flex align-items-center gap-2 mb-1">
+                              <StarRating rating={fb.rating} />
+                              {fb.demeritPoints > 0 && (
+                                <span className="badge bg-danger">
+                                  -{fb.demeritPoints} demerit{fb.demeritPoints > 1 ? 's' : ''}
+                                </span>
+                              )}
+                            </div>
+                            <p className="mb-1">{fb.feedback}</p>
+                            <small className="text-muted">
+                              <i className="bi bi-briefcase me-1"></i>
+                              {fb.jobTitle || 'Job'} • 
+                              <i className="bi bi-calendar ms-2 me-1"></i>
+                              {new Date(fb.createdAt).toLocaleDateString()}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

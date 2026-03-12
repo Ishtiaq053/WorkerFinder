@@ -382,3 +382,132 @@ export const logsAPI = {
       body: JSON.stringify({ daysOld })
     })
 };
+
+// ─── Skills APIs ─────────────────────────────────────────────
+export const skillsAPI = {
+  /**
+   * Get all available skills.
+   */
+  getAll: () =>
+    request('/skills'),
+
+  /**
+   * Validate skill(s).
+   */
+  validate: (skills) =>
+    request('/skills/validate', {
+      method: 'POST',
+      body: JSON.stringify({ skills })
+    }),
+
+  /**
+   * Add a new skill (admin only).
+   */
+  add: (skillName) =>
+    request('/skills', {
+      method: 'POST',
+      body: JSON.stringify({ skillName })
+    }),
+
+  /**
+   * Remove a skill (admin only).
+   */
+  remove: (skillName) =>
+    request(`/skills/${encodeURIComponent(skillName)}`, { method: 'DELETE' })
+};
+
+// ─── Verification APIs ───────────────────────────────────────
+export const verificationAPI = {
+  /**
+   * Submit verification request (worker).
+   */
+  submit: (formData) =>
+    uploadRequest('/verification/submit', formData),
+
+  /**
+   * Get own verification status (worker).
+   */
+  getStatus: () =>
+    request('/verification/status'),
+
+  /**
+   * Get all verification requests (admin).
+   */
+  getAllRequests: (status) =>
+    request(`/verification/requests${status ? `?status=${status}` : ''}`),
+
+  /**
+   * Get specific verification request (admin).
+   */
+  getRequest: (id) =>
+    request(`/verification/request/${id}`),
+
+  /**
+   * Approve verification (admin).
+   */
+  approve: (id) =>
+    request(`/verification/approve/${id}`, { method: 'PUT' }),
+
+  /**
+   * Reject verification (admin).
+   */
+  reject: (id, reason) =>
+    request(`/verification/reject/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ reason })
+    }),
+
+  /**
+   * Delete verification request (admin).
+   */
+  deleteRequest: (id) =>
+    request(`/verification/request/${id}`, { method: 'DELETE' })
+};
+
+// ─── Feedback APIs ───────────────────────────────────────────
+export const feedbackAPI = {
+  /**
+   * Submit feedback for a completed job.
+   */
+  submit: (data) =>
+    request('/feedbacks', { method: 'POST', body: JSON.stringify(data) }),
+
+  /**
+   * Get feedbacks for a worker.
+   */
+  getWorkerFeedbacks: (workerId) =>
+    request(`/feedbacks/worker/${workerId}`),
+
+  /**
+   * Get feedback for a specific job.
+   */
+  getJobFeedback: (jobId) =>
+    request(`/feedbacks/job/${jobId}`),
+
+  /**
+   * Get own feedbacks (worker).
+   */
+  getMyFeedbacks: () =>
+    request('/feedbacks/my'),
+
+  /**
+   * Get worker rating.
+   */
+  getWorkerRating: (workerId) =>
+    request(`/feedbacks/rating/${workerId}`),
+
+  /**
+   * Update feedback (within 24 hours).
+   */
+  update: (id, data) =>
+    request(`/feedbacks/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
+
+  /**
+   * Delete feedback (admin only).
+   */
+  delete: (id) =>
+    request(`/feedbacks/${id}`, { method: 'DELETE' })
+};

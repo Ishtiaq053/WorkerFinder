@@ -8,6 +8,7 @@
 const { applications, jobs, workers, generateId } = require('../models/mockData');
 const { sendResponse, validateFields } = require('../utils/helpers');
 const { createNotification } = require('./notificationController');
+const { matchWorkerToJob } = require('./skillsController');
 
 /**
  * POST /api/applications
@@ -47,6 +48,16 @@ const applyForJob = (req, res) => {
     return sendResponse(res, 403, false, 'Your account has been restricted. You cannot apply for jobs.');
   }
 
+  // 4c. Skill matching validation
+  if (job.category && worker.skill) {
+    const hasMatchingSkill = matchWorkerToJob(worker.skill, job.category);
+    if (!hasMatchingSkill) {
+      return sendResponse(res, 400, false, 
+        `Your skills (${worker.skill}) do not match the job requirement (${job.category}). You cannot apply for this job.`
+      );
+    }
+  }
+
   // 5. Prevent duplicate applications
   const existing = applications.find(
     (a) => a.jobId === jobId && a.workerId === worker.id
@@ -64,6 +75,10 @@ const applyForJob = (req, res) => {
     workerName: worker.name,
     workerSkill: worker.skill,
     workerExperience: worker.experience,
+    workerVerified: worker.verified === true,
+    workerMobileNumber: worker.verified === true ? worker.mobileNumber : null,
+    workerRating: worker.averageRating || null,
+    workerReviewCount: worker.reviewCount || 0,
     userId: req.user.id,
     coverNote: coverNote ? coverNote.trim() : '',
     status: 'pending', // pending → accepted / rejected

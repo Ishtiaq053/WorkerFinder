@@ -1,0 +1,246 @@
+/**
+ * VerificationForm Component Styles
+ */
+
+.verification-form-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.verification-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.verification-header i {
+  font-size: 2rem;
+  color: var(--primary-color);
+  background: var(--primary-light);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.verification-header h5 {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.verification-header p {
+  margin: 0;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+/* Verification Status Cards */
+.verification-status-card {
+  text-align: center;
+  padding: 40px 24px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.verification-status-card .status-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 2.5rem;
+}
+
+.verification-status-card.verified .status-icon {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+}
+
+.verification-status-card.pending .status-icon {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.verification-status-card h5 {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.verification-status-card.verified h5 {
+  color: #059669;
+}
+
+.verification-status-card.pending h5 {
+  color: #D97706;
+}
+
+.verification-status-card p {
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+.verification-benefits {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+.benefit-item i {
+  color: #10B981;
+}
+
+.request-details {
+  background: var(--bg-warm);
+  padding: 16px;
+  border-radius: 8px;
+  text-align: left;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.request-details p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+/* ID Upload Box */
+.id-upload-box {
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  min-height: 160px;
+}
+
+.id-upload-box:hover {
+  border-color: var(--primary-color);
+}
+
+.id-upload-box.error {
+  border-color: var(--danger);
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  cursor: pointer;
+  text-align: center;
+  min-height: 160px;
+  transition: all 0.3s ease;
+}
+
+.upload-placeholder:hover {
+  background: var(--primary-light);
+}
+
+.upload-placeholder i {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.upload-placeholder span {
+  color: var(--text-dark);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.upload-placeholder small {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+.id-preview {
+  position: relative;
+  min-height: 160px;
+}
+
+.id-preview img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.id-preview .remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Privacy Notice */
+.privacy-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-warm);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.privacy-notice i {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  margin-top: 2px;
+}
+
+.privacy-notice p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 576px) {
+  .verification-form-container {
+    padding: 16px;
+  }
+  
+  .verification-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .verification-benefits {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .benefit-item {
+    justify-content: center;
+  }
+}

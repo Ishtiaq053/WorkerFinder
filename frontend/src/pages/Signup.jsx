@@ -7,21 +7,7 @@ import { authAPI } from '../services/api';
 import ThemedAlert from '../components/ThemedAlert';
 import AppDialog from '../components/AppDialog';
 import Footer from '../components/Footer';
-
-const skillOptions = [
-  { value: 'plumber', label: 'Plumber' },
-  { value: 'electrician', label: 'Electrician' },
-  { value: 'carpenter', label: 'Carpenter' },
-  { value: 'painter', label: 'Painter' },
-  { value: 'mason', label: 'Mason' },
-  { value: 'welder', label: 'Welder' },
-  { value: 'driver', label: 'Driver' },
-  { value: 'cleaner', label: 'Cleaner' },
-  { value: 'gardener', label: 'Gardener' },
-  { value: 'mechanic', label: 'Mechanic' },
-  { value: 'labourer', label: 'General Labourer' },
-  { value: 'other', label: 'Other' }
-];
+import SkillDropdown from '../components/SkillDropdown';
 
 const MAX_SKILLS = 3;
 
@@ -48,32 +34,16 @@ export default function Signup() {
     if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
-  // Toggle a skill in the comma-separated skill string (max 3 skills)
-  const handleSkillToggle = (skillValue) => {
-    const currentSkills = form.skill ? form.skill.split(',').map((s) => s.trim()).filter(Boolean) : [];
-    let updatedSkills;
-    if (currentSkills.includes(skillValue)) {
-      // Always allow removing a skill
-      updatedSkills = currentSkills.filter((s) => s !== skillValue);
-    } else {
-      // Check if max skills reached
-      if (currentSkills.length >= MAX_SKILLS) {
-        setAlert({
-          type: 'warning',
-          title: 'Maximum Skills Reached',
-          message: `You can only select up to ${MAX_SKILLS} skills. Please remove one to add another.`
-        });
-        return;
-      }
-      updatedSkills = [...currentSkills, skillValue];
-    }
-    setForm({ ...form, skill: updatedSkills.join(',') });
+  // Handle skill changes from SkillDropdown
+  const handleSkillChange = (skills) => {
+    // skills is an array of skill names
+    setForm({ ...form, skill: skills.join(',') });
     if (errors.skill) setErrors({ ...errors, skill: '' });
   };
 
-  // Get current skills count
-  const getCurrentSkillsCount = () => {
-    return form.skill ? form.skill.split(',').map((s) => s.trim()).filter(Boolean).length : 0;
+  // Get current skills as array
+  const getCurrentSkills = () => {
+    return form.skill ? form.skill.split(',').map((s) => s.trim()).filter(Boolean) : [];
   };
 
   // Client-side validation
@@ -242,48 +212,16 @@ export default function Signup() {
                   <i className="bi bi-tools me-2"></i>Worker Profile Details
                 </h6>
                 <div className="mb-3">
-                  <label className="wf-form-label">
-                    Skills <span className="text-danger">*</span>{' '}
-                    <small className={`${getCurrentSkillsCount() >= MAX_SKILLS ? 'text-warning fw-bold' : 'text-muted'}`}>
-                      (select up to {MAX_SKILLS} skills — {getCurrentSkillsCount()}/{MAX_SKILLS} selected)
-                    </small>
-                  </label>
-                  <div className="d-flex flex-wrap gap-2 mt-1">
-                    {skillOptions.map((opt) => {
-                      const selected = form.skill.split(',').map((s) => s.trim()).includes(opt.value);
-                      const isDisabled = !selected && getCurrentSkillsCount() >= MAX_SKILLS;
-                      return (
-                        <label
-                          key={opt.value}
-                          className={`d-inline-flex align-items-center gap-1 px-3 py-2 rounded-pill border ${
-                            selected 
-                              ? 'bg-primary-wf text-white border-dark' 
-                              : isDisabled 
-                                ? 'bg-light text-muted border-secondary' 
-                                : 'bg-white'
-                          }`}
-                          style={{ 
-                            cursor: isDisabled ? 'not-allowed' : 'pointer', 
-                            fontSize: '0.88rem', 
-                            transition: 'all 0.2s',
-                            opacity: isDisabled ? 0.5 : 1
-                          }}
-                          title={isDisabled ? `Maximum ${MAX_SKILLS} skills allowed` : ''}
-                        >
-                          <input
-                            type="checkbox"
-                            className="d-none"
-                            checked={selected}
-                            onChange={() => handleSkillToggle(opt.value)}
-                            disabled={isDisabled}
-                          />
-                          {selected && <i className="bi bi-check-lg"></i>}
-                          {opt.label}
-                        </label>
-                      );
-                    })}
-                  </div>
-                  {errors.skill && <small className="text-danger">{errors.skill}</small>}
+                  <SkillDropdown
+                    value={getCurrentSkills()}
+                    onChange={handleSkillChange}
+                    multiple={true}
+                    maxSelections={MAX_SKILLS}
+                    placeholder="Select your skills..."
+                    label="Skills"
+                    required={true}
+                    error={errors.skill}
+                  />
                 </div>
                 <div className="mb-3">
                   <label className="wf-form-label">Experience <span className="text-danger">*</span></label>

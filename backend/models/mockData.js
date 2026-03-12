@@ -56,7 +56,9 @@ let counters = {
   notification: 1,
   review: 1,
   saved: 1,
-  log: 1
+  log: 1,
+  verification: 1,
+  feedback: 1
 };
 
 /**

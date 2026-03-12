@@ -74,4 +74,50 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { authenticate, authorize };
+/**
+ * Middleware: Restrict route access to admin only.
+ * Convenience wrapper around authorize('admin').
+ */
+const isAdmin = (req, res, next) => {
+  if (!req.user) {
+    return sendResponse(res, 401, false, 'Authentication required.');
+  }
+
+  if (req.user.role !== 'admin') {
+    return sendResponse(res, 403, false, 'Admin access required.');
+  }
+
+  next();
+};
+
+/**
+ * Middleware: Restrict route access to workers only.
+ */
+const isWorker = (req, res, next) => {
+  if (!req.user) {
+    return sendResponse(res, 401, false, 'Authentication required.');
+  }
+
+  if (req.user.role !== 'worker') {
+    return sendResponse(res, 403, false, 'Worker access required.');
+  }
+
+  next();
+};
+
+/**
+ * Middleware: Restrict route access to customers only.
+ */
+const isCustomer = (req, res, next) => {
+  if (!req.user) {
+    return sendResponse(res, 401, false, 'Authentication required.');
+  }
+
+  if (req.user.role !== 'user') {
+    return sendResponse(res, 403, false, 'Customer access required.');
+  }
+
+  next();
+};
+
+module.exports = { authenticate, authorize, isAdmin, isWorker, isCustomer };

@@ -22,7 +22,9 @@ import ContactPanel from '../../components/ContactPanel';
 import AppDialog from '../../components/AppDialog';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import ChatFAB from '../../components/ChatFAB';
-import { jobAPI, applicationAPI } from '../../services/api';
+import FeedbackModal from '../../components/FeedbackModal';
+import SkillDropdown from '../../components/SkillDropdown';
+import { jobAPI, applicationAPI, feedbackAPI } from '../../services/api';
 
 // ── Sidebar menu items ───────────────────────────────────────
 const sidebarItems = [
@@ -32,21 +34,6 @@ const sidebarItems = [
   { key: 'applications', label: 'Applications', icon: 'people' },
   { key: 'profile', label: 'Profile', icon: 'person-circle' },
   { key: 'contact', label: 'Contact Us', icon: 'envelope' }
-];
-
-// ── Job categories for the form ──────────────────────────────
-const categories = [
-  { value: 'plumbing', label: 'Plumbing' },
-  { value: 'electrical', label: 'Electrical' },
-  { value: 'carpentry', label: 'Carpentry' },
-  { value: 'painting', label: 'Painting' },
-  { value: 'cleaning', label: 'Cleaning' },
-  { value: 'construction', label: 'Construction' },
-  { value: 'driving', label: 'Driving' },
-  { value: 'gardening', label: 'Gardening' },
-  { value: 'moving', label: 'Moving / Shifting' },
-  { value: 'repair', label: 'General Repair' },
-  { value: 'other', label: 'Other' }
 ];
 
 export default function UserDashboard() {
@@ -59,6 +46,7 @@ export default function UserDashboard() {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [appDialog, setAppDialog] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [feedbackModal, setFeedbackModal] = useState(null); // { jobId, workerId, workerName, jobTitle }
 
   // Form state for creating a new job
   const [jobForm, setJobForm] = useState({
@@ -289,6 +277,45 @@ export default function UserDashboard() {
     { key: 'workerSkill', label: 'Skill', render: (row) => row.workerSkill ? row.workerSkill.split(',').map((s) => s.trim()).filter(Boolean).join(', ') : '—' },
     { key: 'workerExperience', label: 'Experience' },
     {
+      key: 'workerContact',
+      label: 'Contact',
+      render: (row) => {
+        // Show contact only for accepted applications with verified workers
+        if (row.status === 'accepted' && row.workerVerified && row.workerMobileNumber) {
+          return (
+            <span className="text-success">
+              <i className="bi bi-telephone me-1"></i>
+              {row.workerMobileNumber}
+            </span>
+          );
+        }
+        if (row.status === 'accepted' && !row.workerVerified) {
+          return (
+            <span className="text-muted small" title="Worker not verified">
+              <i className="bi bi-shield-x me-1"></i>Not verified
+            </span>
+          );
+        }
+        return <span className="text-muted">—</span>;
+      }
+    },
+    {
+      key: 'workerRating',
+      label: 'Rating',
+      render: (row) => {
+        if (row.workerRating && row.workerRating.finalScore) {
+          return (
+            <span className="text-warning">
+              <i className="bi bi-star-fill me-1"></i>
+              {row.workerRating.finalScore.toFixed(1)}
+              <small className="text-muted ms-1">({row.workerRating.reviewCount})</small>
+            </span>
+          );
+        }
+        return <span className="text-muted small">No reviews</span>;
+      }
+    },
+    {
       key: 'coverNote',
       label: 'Note',
       render: (row) => row.coverNote || '—'
@@ -303,25 +330,43 @@ export default function UserDashboard() {
     {
       key: 'actions',
       label: 'Actions',
-      render: (row) =>
-        row.status === 'pending' ? (
-          <div className="d-flex gap-1">
+      render: (row) => {
+        if (row.status === 'pending') {
+          return (
+            <div className="d-flex gap-1">
+              <button
+                className="btn btn-success-wf"
+                onClick={() => handleApplicationStatus(row.id, 'accepted')}
+              >
+                <i className="bi bi-check-lg me-1"></i>Accept
+              </button>
+              <button
+                className="btn btn-danger-wf"
+                onClick={() => handleApplicationStatus(row.id, 'rejected')}
+              >
+                <i className="bi bi-x-lg me-1"></i>Reject
+              </button>
+            </div>
+          );
+        }
+        if (row.status === 'accepted') {
+          return (
             <button
-              className="btn btn-success-wf"
-              onClick={() => handleApplicationStatus(row.id, 'accepted')}
+              className="btn btn-outline-warning btn-sm"
+              onClick={() => setFeedbackModal({
+                jobId: row.jobId,
+                workerId: row.workerId,
+                workerName: row.workerName,
+                jobTitle: row.jobTitle || 'Job'
+              })}
+              title="Leave feedback for this worker"
             >
-              <i className="bi bi-check-lg me-1"></i>Accept
+              <i className="bi bi-star me-1"></i>Feedback
             </button>
-            <button
-              className="btn btn-danger-wf"
-              onClick={() => handleApplicationStatus(row.id, 'rejected')}
-            >
-              <i className="bi bi-x-lg me-1"></i>Reject
-            </button>
-          </div>
-        ) : (
-          <span className="text-muted">—</span>
-        )
+          );
+        }
+        return <span className="text-muted">—</span>;
+      }
     }
   ];
 
@@ -439,26 +484,15 @@ export default function UserDashboard() {
                   {/* Category, Budget, Location in a row */}
                   <div className="row g-3 mb-3">
                     <div className="col-md-4">
-                      <label className="wf-form-label">
-                        Category <span className="text-danger">*</span>
-                      </label>
-                      <select
-                        className={`form-select wf-form-control ${jobErrors.category ? 'is-invalid' : ''}`}
-                        value={jobForm.category}
-                        onChange={(e) => handleJobFormChange('category', e.target.value)}
-                      >
-                        <option value="">Select category</option>
-                        {categories.map((c) => (
-                          <option key={c.value} value={c.value}>
-                            {c.label}
-                          </option>
-                        ))}
-                      </select>
-                      {jobErrors.category && (
-                        <div className="wf-validation-error">
-                          <i className="bi bi-exclamation-circle-fill"></i>{jobErrors.category}
-                        </div>
-                      )}
+                      <SkillDropdown
+                        value={jobForm.category ? [jobForm.category] : []}
+                        onChange={(skills) => handleJobFormChange('category', skills[0] || '')}
+                        multiple={false}
+                        placeholder="Select category"
+                        label="Required Skill"
+                        required={true}
+                        error={jobErrors.category}
+                      />
                     </div>
                     <div className="col-md-4">
                       <label className="wf-form-label">
@@ -614,6 +648,25 @@ export default function UserDashboard() {
         {/* Dashboard Footer */}
         <Footer variant="dashboard" />
       </main>
+
+      {/* Feedback Modal for Rating Workers */}
+      <FeedbackModal
+        show={!!feedbackModal}
+        jobId={feedbackModal?.jobId}
+        workerId={feedbackModal?.workerId}
+        workerName={feedbackModal?.workerName}
+        jobTitle={feedbackModal?.jobTitle}
+        onClose={() => setFeedbackModal(null)}
+        onSuccess={() => {
+          setFeedbackModal(null);
+          setAppDialog({
+            type: 'success',
+            title: 'Feedback Submitted',
+            message: 'Thank you! Your feedback helps maintain quality on our platform.',
+            icon: 'star'
+          });
+        }}
+      />
 
       {/* Action Success Dialog */}
       <AppDialog

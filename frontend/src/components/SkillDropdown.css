@@ -1,0 +1,113 @@
+/**
+ * SkillDropdown Component Styles
+ */
+
+.skill-dropdown-wrapper {
+  margin-bottom: 0;
+}
+
+.skill-dropdown-loading {
+  padding: 12px 16px;
+  background: var(--bg-warm);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Skill Pills Container */
+.skill-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Individual Skill Pill */
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 2px solid var(--border-color);
+  background: white;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.skill-pill:hover:not(.disabled) {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.skill-pill.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-dark);
+  color: white;
+  font-weight: 500;
+}
+
+.skill-pill.selected:hover:not(.disabled) {
+  background: var(--primary-dark);
+}
+
+.skill-pill.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-warm);
+}
+
+.skill-pill.disabled:hover {
+  border-color: var(--border-color);
+  background: var(--bg-warm);
+}
+
+/* Chips variant */
+.skill-pills-container.chips .skill-pill {
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+/* Default variant with slightly different styling */
+.skill-pills-container.default .skill-pill {
+  border-radius: 8px;
+}
+
+/* Selected indicator animation */
+.skill-pill i {
+  font-size: 0.9rem;
+  animation: checkIn 0.2s ease;
+}
+
+@keyframes checkIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Validation error styling */
+.skill-dropdown-wrapper .wf-validation-error {
+  margin-top: 8px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 576px) {
+  .skill-pill {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+  
+  .skill-pills-container {
+    gap: 6px;
+  }
+}
