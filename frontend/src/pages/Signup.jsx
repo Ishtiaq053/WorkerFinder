@@ -34,16 +34,10 @@ export default function Signup() {
     if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
-  // Handle skill changes from SkillDropdown
-  const handleSkillChange = (skills) => {
-    // skills is an array of skill names
-    setForm({ ...form, skill: skills.join(',') });
+  // Handle skill changes from SkillDropdown (receives comma-separated string)
+  const handleSkillChange = (skillsString) => {
+    setForm({ ...form, skill: skillsString });
     if (errors.skill) setErrors({ ...errors, skill: '' });
-  };
-
-  // Get current skills as array
-  const getCurrentSkills = () => {
-    return form.skill ? form.skill.split(',').map((s) => s.trim()).filter(Boolean) : [];
   };
 
   // Client-side validation
@@ -213,7 +207,7 @@ export default function Signup() {
                 </h6>
                 <div className="mb-3">
                   <SkillDropdown
-                    value={getCurrentSkills()}
+                    value={form.skill}
                     onChange={handleSkillChange}
                     multiple={true}
                     maxSelections={MAX_SKILLS}

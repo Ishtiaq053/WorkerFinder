@@ -226,8 +226,10 @@
 
 .id-image-card img {
   width: 100%;
-  height: 140px;
-  object-fit: cover;
+  height: 200px;
+  object-fit: contain;
+  background: #f0f0f0;
+  padding: 8px;
 }
 
 .id-image-card span {
@@ -273,8 +275,11 @@
 
 .image-preview-modal img {
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 80vh;
   object-fit: contain;
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 12px;
 }
 
 /* Badge styles */

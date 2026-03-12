@@ -311,16 +311,47 @@ export default function WorkerDashboard() {
                       <i className="bi bi-geo-alt me-1"></i>
                       {workerProfile?.location}
                     </p>
-                    <span className={`wf-badge badge-${isRestricted ? 'rejected' : workerProfile?.status}`}>
-                      {isRestricted ? 'restricted' : workerProfile?.status}
-                    </span>
+                    <div className="d-flex align-items-center gap-2 flex-wrap mt-1">
+                      <span className={`wf-badge badge-${isRestricted ? 'rejected' : workerProfile?.status}`}>
+                        {isRestricted ? 'restricted' : workerProfile?.status}
+                      </span>
+                      {workerProfile?.verified ? (
+                        <span className="wf-badge" style={{ background: '#d1fae5', color: '#065f46' }}>
+                          <i className="bi bi-patch-check-fill me-1"></i>Verified
+                        </span>
+                      ) : isApproved ? (
+                        <span className="wf-badge" style={{ background: '#fef3c7', color: '#92400e' }}>
+                          <i className="bi bi-shield-exclamation me-1"></i>Not Verified
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Stats (only if approved) */}
-            {isApproved && (
+            {/* Verification nudge for approved but not verified workers */}
+            {isApproved && !workerProfile?.verified && (
+              <div
+                className="wf-alert wf-alert-warning mb-4"
+                style={{ cursor: 'pointer' }}
+                onClick={() => setActiveTab('verification')}
+              >
+                <i className="bi bi-shield-exclamation" style={{ fontSize: '1.5rem' }}></i>
+                <div className="flex-grow-1">
+                  <strong>Verify Your Identity to Access Jobs</strong>
+                  <p className="mb-0 mt-1">
+                    Your profile is approved! Complete identity verification to unlock job browsing and applications.
+                  </p>
+                </div>
+                <button className="btn btn-sm btn-primary-wf ms-3" style={{ whiteSpace: 'nowrap' }}>
+                  Verify Now →
+                </button>
+              </div>
+            )}
+
+            {/* Stats (only if approved and verified) */}
+            {isApproved && workerProfile?.verified && (
               <div className="row g-3 mb-4">
                 <div className="col-sm-6 col-lg-3">
                   <StatCard icon="briefcase" value={stats.available} label="Available Jobs" colorClass="stat-icon-blue" />
@@ -349,7 +380,36 @@ export default function WorkerDashboard() {
               <div className="empty-state">
                 <i className="bi bi-lock"></i>
                 <h5>Access Restricted</h5>
-                <p>Your profile must be approved before you can browse jobs.</p>
+                <p>Your profile must be approved by admin before you can browse jobs.</p>
+              </div>
+            ) : !workerProfile?.verified ? (
+              <div className="wf-card text-center py-5 px-4">
+                <div style={{ fontSize: '4rem' }} className="mb-3">
+                  <i className="bi bi-shield-exclamation text-warning"></i>
+                </div>
+                <h4 className="fw-bold">Identity Verification Required</h4>
+                <p className="text-muted mb-4" style={{ maxWidth: '500px', margin: '0 auto 1.5rem' }}>
+                  Your profile has been <strong>approved</strong>! To access available jobs and
+                  start applying, you must first verify your identity by submitting your CNIC.
+                  This helps build trust with customers.
+                </p>
+                <button
+                  className="btn btn-primary-wf px-5 py-2"
+                  onClick={() => setActiveTab('verification')}
+                >
+                  <i className="bi bi-shield-check me-2"></i>Verify My Identity
+                </button>
+                <p className="text-muted mt-3 small">
+                  <i className="bi bi-info-circle me-1"></i>
+                  Already submitted? Check the status in the{' '}
+                  <span
+                    className="text-primary-wf fw-semibold"
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveTab('verification')}
+                  >
+                    Verification
+                  </span>{' '}tab.
+                </p>
               </div>
             ) : (
               <div className="wf-card">
@@ -357,7 +417,7 @@ export default function WorkerDashboard() {
                   <DataTable
                     columns={jobColumns}
                     data={availableJobs}
-                    emptyMessage="No jobs available at the moment. Check back later!"
+                    emptyMessage="No matching jobs available at the moment. Check back later!"
                   />
                 </div>
               </div>
@@ -376,6 +436,22 @@ export default function WorkerDashboard() {
                 <i className="bi bi-lock"></i>
                 <h5>Access Restricted</h5>
                 <p>Your profile must be approved before you can view applications.</p>
+              </div>
+            ) : !workerProfile?.verified ? (
+              <div className="wf-card text-center py-5 px-4">
+                <div style={{ fontSize: '4rem' }} className="mb-3">
+                  <i className="bi bi-shield-exclamation text-warning"></i>
+                </div>
+                <h4 className="fw-bold">Verify Your Identity First</h4>
+                <p className="text-muted mb-4" style={{ maxWidth: '480px', margin: '0 auto 1.5rem' }}>
+                  You need to complete identity verification before you can apply for jobs.
+                </p>
+                <button
+                  className="btn btn-primary-wf px-5 py-2"
+                  onClick={() => setActiveTab('verification')}
+                >
+                  <i className="bi bi-shield-check me-2"></i>Verify My Identity
+                </button>
               </div>
             ) : (
               <div className="wf-card">

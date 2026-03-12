@@ -27,10 +27,18 @@ export default function SkillDropdown({
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
-  // Parse current value into array
-  const selectedSkills = value
-    ? value.split(',').map(s => s.trim()).filter(Boolean)
-    : [];
+  // Parse current value into array - handle both string and array inputs
+  const parseValue = () => {
+    if (Array.isArray(value)) {
+      return value.filter(Boolean);
+    }
+    if (typeof value === 'string' && value.trim()) {
+      return value.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    return [];
+  };
+  
+  const selectedSkills = parseValue();
 
   // Fetch skills from API
   useEffect(() => {

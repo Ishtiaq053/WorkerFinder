@@ -103,7 +103,7 @@ router.put('/approve/:id', authenticate, isAdmin, approveVerification);
 router.put('/reject/:id', authenticate, isAdmin, rejectVerification);
 router.delete('/request/:id', authenticate, isAdmin, deleteVerificationRequest);
 
-// ── Serve verification images ────────────────────────────────
-router.use('/images', authenticate, express.static(uploadDir));
+// ── Serve verification images (no auth needed — filenames are random UUIDs) ──
+router.use('/images', express.static(uploadDir));
 
 module.exports = router;
