@@ -1,0 +1,12 @@
+.location-dropdown-wrapper {
+  width: 100%;
+}
+
+.location-dropdown-wrapper .form-select.wf-form-control {
+  transition: border-color 0.2s ease;
+}
+
+.location-dropdown-wrapper .form-select.wf-form-control:focus {
+  border-color: var(--primary-wf, #6c5ce7);
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.15);
+}

@@ -8,6 +8,7 @@ import ThemedAlert from '../components/ThemedAlert';
 import AppDialog from '../components/AppDialog';
 import Footer from '../components/Footer';
 import SkillDropdown from '../components/SkillDropdown';
+import LocationDropdown from '../components/LocationDropdown';
 
 const MAX_SKILLS = 3;
 
@@ -40,6 +41,12 @@ export default function Signup() {
     if (errors.skill) setErrors({ ...errors, skill: '' });
   };
 
+  // Handle location changes from LocationDropdown
+  const handleLocationChange = (locationString) => {
+    setForm({ ...form, location: locationString });
+    if (errors.location) setErrors({ ...errors, location: '' });
+  };
+
   // Client-side validation
   const validate = () => {
     const newErrors = {};
@@ -58,7 +65,7 @@ export default function Signup() {
     if (form.role === 'worker') {
       if (!form.skill) newErrors.skill = 'Please select at least one skill.';
       if (!form.experience.trim()) newErrors.experience = 'Experience is required.';
-      if (!form.location.trim()) newErrors.location = 'Location is required.';
+      if (!form.location.trim()) newErrors.location = 'Please select your country and city.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -230,16 +237,13 @@ export default function Signup() {
                   {errors.experience && <small className="text-danger">{errors.experience}</small>}
                 </div>
                 <div className="mb-0">
-                  <label className="wf-form-label">Location <span className="text-danger">*</span></label>
-                  <input
-                    type="text"
-                    className={`form-control wf-form-control ${errors.location ? 'border-danger' : ''}`}
-                    name="location"
+                  <LocationDropdown
                     value={form.location}
-                    onChange={handleChange}
-                    placeholder="e.g., Lahore, Pakistan"
+                    onChange={handleLocationChange}
+                    error={errors.location}
+                    required={true}
+                    label="Location"
                   />
-                  {errors.location && <small className="text-danger">{errors.location}</small>}
                 </div>
               </div>
             )}

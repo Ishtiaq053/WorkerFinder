@@ -7,6 +7,7 @@
 
 const { users, workers, tokens, generateId } = require('../models/mockData');
 const { generateToken, sendResponse, validateFields } = require('../utils/helpers');
+const { canonicalizeSkillList } = require('./skillsController');
 
 /**
  * POST /api/auth/signup
@@ -53,13 +54,15 @@ const signup = (req, res) => {
 
   // 6. If worker, create a worker profile (starts as "pending")
   if (role === 'worker') {
+    const normalizedSkills = canonicalizeSkillList(skill);
+
     const workerId = generateId('worker');
     const newWorker = {
       id: workerId,
       userId,
       name: name.trim(),
       email: email.trim().toLowerCase(),
-      skill: skill.trim(),
+      skill: normalizedSkills.join(', '),
       experience: experience.toString().trim(),
       location: location.trim(),
       status: 'pending', // Requires admin approval

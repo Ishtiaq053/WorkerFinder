@@ -26,7 +26,44 @@ let users = [
 let workers = [];
 
 /** Jobs — posted by users (customers) */
-let jobs = [];
+let jobs = [
+  {
+    id: 'job-1',
+    userId: 'user-admin-001',
+    postedBy: 'Test Customer',
+    title: 'Kitchen Plumbing Repair',
+    description: 'Need a plumber to fix leaking pipes in kitchen sink and replace faucet.',
+    category: 'Plumbing',
+    budget: 150,
+    location: 'Lahore, Pakistan',
+    status: 'open',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 days ago
+  },
+  {
+    id: 'job-2', 
+    userId: 'user-admin-001',
+    postedBy: 'Test Customer',
+    title: 'House Painting',
+    description: 'Need to paint exterior walls of 2-story house. Paint will be provided.',
+    category: 'Painting',
+    budget: 300,
+    location: 'Karachi, Pakistan',
+    status: 'open',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // 1 day ago
+  },
+  {
+    id: 'job-3',
+    userId: 'user-admin-001', 
+    postedBy: 'Test Customer',
+    title: 'Electrical Wiring Installation',
+    description: 'Install new electrical wiring for a room addition. Must be certified electrician.',
+    category: 'Electrical',
+    budget: 500,
+    location: 'Islamabad, Pakistan',
+    status: 'open',
+    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() // 3 hours ago
+  }
+];
 
 /** Applications — workers apply to jobs */
 let applications = [];

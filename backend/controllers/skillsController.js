@@ -10,6 +10,28 @@ const fs = require('fs');
 const path = require('path');
 const { sendResponse } = require('../utils/helpers');
 
+const SKILL_ALIAS_GROUPS = {
+  'Plumbing': ['plumbing', 'plumber'],
+  'Electrical': ['electrical', 'electrician'],
+  'Carpentry': ['carpentry', 'carpenter'],
+  'Painting': ['painting', 'painter'],
+  'Construction': ['construction', 'builder', 'building'],
+  'Driving': ['driving', 'driver', 'transport'],
+  'Gardening': ['gardening', 'gardener'],
+  'Mechanic': ['mechanic', 'mechanical', 'automotive', 'repair'],
+  'Cleaning': ['cleaning', 'cleaner'],
+  'Mason': ['mason', 'masonry'],
+  'Welder': ['welder', 'welding'],
+  'General Labour': ['general labour', 'general labor', 'labour', 'labor', 'labourer', 'laborer', 'general', 'helper', 'other']
+};
+
+const COMPATIBLE_SKILLS = {
+  'Construction': ['Mason', 'Welder', 'General Labour'],
+  'Mason': ['Construction', 'General Labour'],
+  'Welder': ['Construction', 'General Labour'],
+  'General Labour': ['Construction', 'Mason', 'Welder', 'Cleaning']
+};
+
 // Path to skills data file
 const skillsFilePath = path.join(__dirname, '../data/skills.json');
 
@@ -45,6 +67,51 @@ const readSkills = () => {
   }
 };
 
+const normalizeSkillKey = (value) => {
+  return (value || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, ' ')
+    .replace(/\s+/g, ' ');
+};
+
+const canonicalizeSkillName = (value) => {
+  const normalizedValue = normalizeSkillKey(value);
+  if (!normalizedValue) return '';
+
+  const skills = readSkills();
+  const exactSkill = skills.find((skill) => normalizeSkillKey(skill) === normalizedValue);
+  if (exactSkill) {
+    return exactSkill;
+  }
+
+  for (const [canonicalSkill, aliases] of Object.entries(SKILL_ALIAS_GROUPS)) {
+    if (aliases.includes(normalizedValue)) {
+      return canonicalSkill;
+    }
+  }
+
+  return value.toString().trim();
+};
+
+const canonicalizeSkillList = (skillInput) => {
+  if (Array.isArray(skillInput)) {
+    return skillInput
+      .map((skill) => canonicalizeSkillName(skill))
+      .filter(Boolean);
+  }
+
+  if (typeof skillInput !== 'string') {
+    return [];
+  }
+
+  return skillInput
+    .split(',')
+    .map((skill) => canonicalizeSkillName(skill))
+    .filter(Boolean);
+};
+
 /**
  * Helper: Write skills to JSON file
  */
@@ -76,13 +143,7 @@ const validateSkill = (skillInput) => {
   const skills = readSkills();
   const skillsLower = skills.map(s => s.toLowerCase());
   
-  let inputSkills = [];
-  
-  if (Array.isArray(skillInput)) {
-    inputSkills = skillInput;
-  } else if (typeof skillInput === 'string') {
-    inputSkills = skillInput.split(',').map(s => s.trim()).filter(Boolean);
-  }
+  const inputSkills = canonicalizeSkillList(skillInput);
   
   const invalidSkills = inputSkills.filter(s => !skillsLower.includes(s.toLowerCase()));
   
@@ -180,11 +241,18 @@ const removeSkill = (req, res) => {
  */
 const matchWorkerToJob = (workerSkills, jobRequiredSkill) => {
   if (!workerSkills || !jobRequiredSkill) return false;
-  
-  const workerSkillsArray = workerSkills.split(',').map(s => s.trim().toLowerCase());
-  const requiredSkillLower = jobRequiredSkill.trim().toLowerCase();
-  
-  return workerSkillsArray.includes(requiredSkillLower);
+
+  const workerSkillsArray = canonicalizeSkillList(workerSkills);
+  const requiredSkill = canonicalizeSkillName(jobRequiredSkill);
+
+  return workerSkillsArray.some((skill) => {
+    if (skill === requiredSkill) {
+      return true;
+    }
+
+    const compatibleSkills = COMPATIBLE_SKILLS[skill] || [];
+    return compatibleSkills.includes(requiredSkill);
+  });
 };
 
 module.exports = {
@@ -194,5 +262,7 @@ module.exports = {
   addSkill,
   removeSkill,
   matchWorkerToJob,
-  readSkills
+  readSkills,
+  canonicalizeSkillName,
+  canonicalizeSkillList
 };

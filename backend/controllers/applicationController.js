@@ -43,6 +43,11 @@ const applyForJob = (req, res) => {
     return sendResponse(res, 403, false, 'Your profile must be approved by admin before applying.');
   }
 
+  // 4a. Check if worker is verified (NEW REQUIREMENT)
+  if (!worker.verified) {
+    return sendResponse(res, 403, false, 'Your identity must be verified before applying for jobs.');
+  }
+
   // 4b. Check if worker is restricted
   if (worker.restricted) {
     return sendResponse(res, 403, false, 'Your account has been restricted. You cannot apply for jobs.');

@@ -24,6 +24,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import ChatFAB from '../../components/ChatFAB';
 import FeedbackModal from '../../components/FeedbackModal';
 import SkillDropdown from '../../components/SkillDropdown';
+import LocationDropdown from '../../components/LocationDropdown';
 import { jobAPI, applicationAPI, feedbackAPI } from '../../services/api';
 
 // ── Sidebar menu items ───────────────────────────────────────
@@ -79,7 +80,7 @@ export default function UserDashboard() {
     } else if (isNaN(jobForm.budget) || Number(jobForm.budget) <= 0) {
       errs.budget = 'Budget must be a positive number.';
     }
-    if (!jobForm.location.trim()) errs.location = 'Location is required.';
+    if (!jobForm.location.trim()) errs.location = 'Please select a country and city.';
     setJobErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -481,12 +482,12 @@ export default function UserDashboard() {
                     )}
                   </div>
 
-                  {/* Category, Budget, Location in a row */}
+                  {/* Category and Budget */}
                   <div className="row g-3 mb-3">
-                    <div className="col-md-4">
+                    <div className="col-md-6">
                       <SkillDropdown
-                        value={jobForm.category ? [jobForm.category] : []}
-                        onChange={(skills) => handleJobFormChange('category', skills[0] || '')}
+                        value={jobForm.category}
+                        onChange={(val) => handleJobFormChange('category', val)}
                         multiple={false}
                         placeholder="Select category"
                         label="Required Skill"
@@ -494,7 +495,7 @@ export default function UserDashboard() {
                         error={jobErrors.category}
                       />
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-6">
                       <label className="wf-form-label">
                         Budget ($) <span className="text-danger">*</span>
                       </label>
@@ -512,23 +513,17 @@ export default function UserDashboard() {
                         </div>
                       )}
                     </div>
-                    <div className="col-md-4">
-                      <label className="wf-form-label">
-                        Location <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control wf-form-control ${jobErrors.location ? 'is-invalid' : ''}`}
-                        value={jobForm.location}
-                        onChange={(e) => handleJobFormChange('location', e.target.value)}
-                        placeholder="e.g., Lahore"
-                      />
-                      {jobErrors.location && (
-                        <div className="wf-validation-error">
-                          <i className="bi bi-exclamation-circle-fill"></i>{jobErrors.location}
-                        </div>
-                      )}
-                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="mb-3">
+                    <LocationDropdown
+                      value={jobForm.location}
+                      onChange={(val) => handleJobFormChange('location', val)}
+                      label="Location"
+                      required={true}
+                      error={jobErrors.location}
+                    />
                   </div>
 
                   {/* Submit */}

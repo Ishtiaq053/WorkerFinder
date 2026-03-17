@@ -8,25 +8,7 @@
 const { jobs, applications, workers, generateId } = require('../models/mockData');
 const { sendResponse, validateFields } = require('../utils/helpers');
 const { createNotification } = require('./notificationController');
-
-/**
- * Mapping from worker skill names to job categories.
- * A worker with a given skill should see jobs in the mapped categories.
- */
-const skillToCategoryMap = {
-  plumber: ['plumbing'],
-  electrician: ['electrical'],
-  carpenter: ['carpentry'],
-  painter: ['painting'],
-  mason: ['construction'],
-  welder: ['construction', 'repair'],
-  driver: ['driving', 'moving'],
-  cleaner: ['cleaning'],
-  gardener: ['gardening'],
-  mechanic: ['repair'],
-  labourer: ['construction', 'moving', 'cleaning', 'gardening'],
-  other: ['other']
-};
+const { canonicalizeSkillName, matchWorkerToJob } = require('./skillsController');
 
 /**
  * POST /api/jobs
@@ -49,7 +31,7 @@ const createJob = (req, res) => {
     postedBy: req.user.name,
     title: title.trim(),
     description: description.trim(),
-    category: category.trim(),
+    category: canonicalizeSkillName(category),
     budget: parseFloat(budget),
     location: location.trim(),
     status: 'open', // Possible: open, in-progress, completed, cancelled
@@ -72,31 +54,37 @@ const getUserJobs = (req, res) => {
 /**
  * GET /api/jobs/available
  * Get open jobs matching the worker's skills.
- * Restricted workers see no jobs.
+ * Restricted workers see no jobs. Workers must be verified to see jobs.
  */
 const getAvailableJobs = (req, res) => {
   // Find the worker profile for the logged-in user
   const worker = workers.find((w) => w.userId === req.user.id);
 
+  // If no worker profile found, return empty
+  if (!worker) {
+    return sendResponse(res, 200, true, 'No worker profile found.', { jobs: [] });
+  }
+
+  // Check if worker is approved
+  if (worker.status !== 'approved') {
+    return sendResponse(res, 200, true, 'Worker profile not approved.', { jobs: [] });
+  }
+
+  // Check if worker is verified (NEW REQUIREMENT)
+  if (!worker.verified) {
+    return sendResponse(res, 200, true, 'Worker identity verification required.', { jobs: [] });
+  }
+
   // If worker is restricted, return empty list
-  if (worker && worker.restricted) {
+  if (worker.restricted) {
     return sendResponse(res, 200, true, 'You are restricted from viewing jobs.', { jobs: [] });
   }
 
   let openJobs = jobs.filter((j) => j.status === 'open');
 
-  // If worker has skills, filter jobs by matching categories
-  if (worker && worker.skill) {
-    const workerSkills = worker.skill.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
-
-    // Build a set of all matching categories from the worker's skills
-    const matchingCategories = new Set();
-    workerSkills.forEach((skill) => {
-      const categories = skillToCategoryMap[skill] || ['other'];
-      categories.forEach((cat) => matchingCategories.add(cat));
-    });
-
-    openJobs = openJobs.filter((j) => matchingCategories.has(j.category));
+  // Filter jobs by matching skills
+  if (worker.skill && openJobs.length > 0) {
+    openJobs = openJobs.filter((job) => job.category && matchWorkerToJob(worker.skill, job.category));
   }
 
   sendResponse(res, 200, true, 'Available jobs retrieved.', { jobs: openJobs });
