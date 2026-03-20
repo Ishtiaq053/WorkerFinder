@@ -6,7 +6,8 @@
  * ──────────────────────────────────────────────────────────────
  */
 
-const API_BASE = '/api';
+// Use environment variable for production, fallback to /api for development (Vite proxy)
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * Generic fetch wrapper.
@@ -176,7 +177,13 @@ export const adminAPI = {
     request(`/admin/worker/${id}`, { method: 'DELETE' }),
 
   toggleRestriction: (id) =>
-    request(`/admin/worker/${id}/restrict`, { method: 'PUT' })
+    request(`/admin/worker/${id}/restrict`, { method: 'PUT' }),
+
+  getCustomers: () =>
+    request('/admin/customers'),
+
+  deleteCustomer: (id) =>
+    request(`/admin/customer/${id}`, { method: 'DELETE' })
 };
 
 // ─── Profile APIs ────────────────────────────────────────────

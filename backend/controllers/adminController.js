@@ -220,6 +220,58 @@ const getStats = (req, res) => {
   sendResponse(res, 200, true, 'Stats retrieved.', { stats });
 };
 
+/**
+ * GET /api/admin/customers
+ * Get all customers (users with role 'user').
+ */
+const getCustomers = (req, res) => {
+  const customers = users
+    .filter((u) => u.role === 'user')
+    .map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      location: u.location || 'N/A',
+      createdAt: u.createdAt || new Date().toISOString(),
+      jobsPosted: jobs.filter((j) => j.postedBy === u.id || j.userId === u.id).length
+    }));
+
+  sendResponse(res, 200, true, 'Customers retrieved.', { customers });
+};
+
+/**
+ * DELETE /api/admin/customer/:id
+ * Delete a customer and all their posted jobs.
+ */
+const deleteCustomer = (req, res) => {
+  const userIndex = users.findIndex((u) => u.id === req.params.id && u.role === 'user');
+  if (userIndex === -1) {
+    return sendResponse(res, 404, false, 'Customer not found.');
+  }
+
+  const deleted = users.splice(userIndex, 1)[0];
+
+  // Log activity
+  logActivity(req.user.id, 'delete_customer', 'user', req.params.id, {
+    name: deleted.name
+  });
+
+  // Remove all jobs posted by this customer
+  for (let i = jobs.length - 1; i >= 0; i--) {
+    if (jobs[i].postedBy === deleted.id || jobs[i].userId === deleted.id) {
+      // Remove applications for this job first
+      for (let j = applications.length - 1; j >= 0; j--) {
+        if (applications[j].jobId === jobs[i].id) {
+          applications.splice(j, 1);
+        }
+      }
+      jobs.splice(i, 1);
+    }
+  }
+
+  sendResponse(res, 200, true, 'Customer deleted successfully.', { customer: deleted });
+};
+
 module.exports = {
   getWorkers,
   approveWorker,
@@ -228,5 +280,7 @@ module.exports = {
   toggleRestriction,
   getAllJobs,
   deleteJob,
-  getStats
+  getStats,
+  getCustomers,
+  deleteCustomer
 };

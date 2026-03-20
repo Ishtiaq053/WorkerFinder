@@ -12,8 +12,10 @@
  * ──────────────────────────────────────────────────────────────
  */
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from '../../components/Sidebar';
+import MobileSidebar from '../../components/MobileSidebar';
 import { StatCard } from '../../components/Card';
 import DataTable from '../../components/DataTable';
 import Alert from '../../components/Alert';
@@ -232,6 +234,14 @@ export default function WorkerDashboard() {
         user={user}
       />
 
+      {/* Mobile Sidebar */}
+      <MobileSidebar
+        items={sidebarItems}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        user={user}
+      />
+
       <main className="dashboard-content">
         {/* Global Alert */}
         {alert && (
@@ -364,6 +374,40 @@ export default function WorkerDashboard() {
                 </div>
                 <div className="col-sm-6 col-lg-3">
                   <StatCard icon="clock" value={stats.pending} label="Pending" colorClass="stat-icon-peach" />
+                </div>
+              </div>
+            )}
+
+            {/* Quick Actions (only if approved and verified) */}
+            {isApproved && workerProfile?.verified && (
+              <div className="wf-card mb-4">
+                <div className="card-body">
+                  <h6 className="fw-bold text-primary-wf mb-3">
+                    <i className="bi bi-lightning-charge me-2"></i>Quick Actions
+                  </h6>
+                  <div className="d-flex gap-2 flex-wrap">
+                    <button
+                      className="btn btn-primary-wf"
+                      onClick={() => setActiveTab('browse-jobs')}
+                    >
+                      <i className="bi bi-search me-2"></i>Browse Jobs
+                    </button>
+                    <Link to="/saved-jobs" className="btn btn-outline-wf">
+                      <i className="bi bi-heart me-2"></i>Saved Jobs
+                    </Link>
+                    <button
+                      className="btn btn-outline-wf"
+                      onClick={() => setActiveTab('my-applications')}
+                    >
+                      <i className="bi bi-file-earmark-text me-2"></i>My Applications
+                    </button>
+                    <button
+                      className="btn btn-outline-wf"
+                      onClick={() => setActiveTab('feedbacks')}
+                    >
+                      <i className="bi bi-star me-2"></i>View Reviews
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

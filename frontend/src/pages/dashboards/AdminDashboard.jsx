@@ -11,6 +11,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from '../../components/Sidebar';
+import MobileSidebar from '../../components/MobileSidebar';
 import { StatCard } from '../../components/Card';
 import DataTable from '../../components/DataTable';
 import Alert from '../../components/Alert';
@@ -25,6 +26,7 @@ import { adminAPI } from '../../services/api';
 // ── Sidebar menu items ───────────────────────────────────────
 const sidebarItems = [
   { key: 'overview', label: 'Overview', icon: 'grid' },
+  { key: 'customers', label: 'Manage Customers', icon: 'person' },
   { key: 'workers', label: 'Manage Workers', icon: 'people' },
   { key: 'verification', label: 'Verification Requests', icon: 'shield-check' },
   { key: 'jobs', label: 'Manage Jobs', icon: 'briefcase' },
@@ -263,6 +265,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState({});
   const [workers, setWorkers] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
@@ -276,14 +279,16 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       // Fetch all admin data in parallel
-      const [statsRes, workersRes, jobsRes] = await Promise.all([
+      const [statsRes, workersRes, jobsRes, customersRes] = await Promise.all([
         adminAPI.getStats(),
         adminAPI.getWorkers(),
-        adminAPI.getAllJobs()
+        adminAPI.getAllJobs(),
+        adminAPI.getCustomers()
       ]);
       setStats(statsRes.data.stats);
       setWorkers(workersRes.data.workers);
       setJobs(jobsRes.data.jobs);
+      setCustomers(customersRes.data.customers);
     } catch (err) {
       setAlert({ type: 'error', message: err.message });
     } finally {
@@ -427,6 +432,31 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleDeleteCustomer = async (customerId) => {
+    setConfirmAction({
+      title: 'Delete Customer?',
+      message: 'Are you sure you want to permanently delete this customer? Their account and all their posted jobs will be removed. This cannot be undone.',
+      type: 'danger',
+      icon: 'bi-person-x-fill',
+      onConfirm: async () => {
+        try {
+          await adminAPI.deleteCustomer(customerId);
+          setConfirmAction(null);
+          setAppDialog({
+            type: 'success',
+            title: 'Customer Deleted',
+            message: 'The customer account has been permanently removed from the platform.',
+            icon: 'bi-person-x-fill'
+          });
+          fetchData();
+        } catch (err) {
+          setConfirmAction(null);
+          setAlert({ type: 'error', message: err.message });
+        }
+      }
+    });
+  };
+
   // ── Filtered Data ────────────────────────────────────────
 
   const filteredWorkers = workerFilter
@@ -534,6 +564,39 @@ export default function AdminDashboard() {
     }
   ];
 
+  const customerColumns = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'location', label: 'Location' },
+    {
+      key: 'jobsPosted',
+      label: 'Jobs Posted',
+      render: (row) => (
+        <span className="wf-badge" style={{ background: 'var(--info-bg)', color: 'var(--info)' }}>
+          {row.jobsPosted}
+        </span>
+      )
+    },
+    {
+      key: 'createdAt',
+      label: 'Joined',
+      render: (row) => new Date(row.createdAt).toLocaleDateString()
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (row) => (
+        <button
+          className="btn btn-danger-wf"
+          onClick={() => handleDeleteCustomer(row.id)}
+          title="Permanently delete this customer"
+        >
+          <i className="bi bi-trash me-1"></i>Delete
+        </button>
+      )
+    }
+  ];
+
   // ── Render ───────────────────────────────────────────────
 
   if (loading) return <LoadingSpinner message="Loading admin panel..." />;
@@ -541,6 +604,14 @@ export default function AdminDashboard() {
   return (
     <div className="dashboard-container">
       <Sidebar
+        items={sidebarItems}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        user={user}
+      />
+
+      {/* Mobile Sidebar */}
+      <MobileSidebar
         items={sidebarItems}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -649,6 +720,52 @@ export default function AdminDashboard() {
                     />
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Customers Management Tab ─────────────────── */}
+        {activeTab === 'customers' && (
+          <div>
+            <h4 className="section-title">
+              <i className="bi bi-person me-2"></i>Manage Customers
+            </h4>
+
+            {/* Summary Stats */}
+            <div className="row g-3 mb-4">
+              <div className="col-sm-6 col-lg-4">
+                <div className="wf-card text-center py-3">
+                  <h3 className="text-primary-wf fw-bold mb-0">{customers.length}</h3>
+                  <small className="text-muted">Total Customers</small>
+                </div>
+              </div>
+              <div className="col-sm-6 col-lg-4">
+                <div className="wf-card text-center py-3">
+                  <h3 className="text-info fw-bold mb-0">
+                    {customers.reduce((sum, c) => sum + (c.jobsPosted || 0), 0)}
+                  </h3>
+                  <small className="text-muted">Total Jobs Posted</small>
+                </div>
+              </div>
+              <div className="col-sm-6 col-lg-4">
+                <div className="wf-card text-center py-3">
+                  <h3 className="text-success fw-bold mb-0">
+                    {customers.filter(c => c.jobsPosted > 0).length}
+                  </h3>
+                  <small className="text-muted">Active Customers</small>
+                </div>
+              </div>
+            </div>
+
+            {/* Customers Table */}
+            <div className="wf-card">
+              <div className="card-body">
+                <DataTable
+                  columns={customerColumns}
+                  data={customers}
+                  emptyMessage="No customers found."
+                />
               </div>
             </div>
           </div>

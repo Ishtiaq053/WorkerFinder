@@ -12,7 +12,9 @@ const {
   toggleRestriction,
   getAllJobs,
   deleteJob,
-  getStats
+  getStats,
+  getCustomers,
+  deleteCustomer
 } = require('../controllers/adminController');
 const { authenticate, authorize } = require('../middleware/auth');
 
@@ -28,5 +30,7 @@ router.delete('/worker/:id', deleteWorker);
 router.put('/worker/:id/restrict', toggleRestriction);
 router.get('/jobs', getAllJobs);
 router.delete('/job/:id', deleteJob);
+router.get('/customers', getCustomers);
+router.delete('/customer/:id', deleteCustomer);
 
 module.exports = router;

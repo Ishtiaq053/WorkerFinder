@@ -12,6 +12,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from '../../components/Sidebar';
+import MobileSidebar from '../../components/MobileSidebar';
 import { StatCard } from '../../components/Card';
 import DataTable from '../../components/DataTable';
 import Alert from '../../components/Alert';
@@ -381,6 +382,14 @@ export default function UserDashboard() {
         user={user}
       />
 
+      {/* Mobile Sidebar */}
+      <MobileSidebar
+        items={sidebarItems}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        user={user}
+      />
+
       <main className="dashboard-content">
         {/* Global Alert */}
         {alert && (
@@ -411,6 +420,35 @@ export default function UserDashboard() {
               </div>
               <div className="col-sm-6 col-lg-3">
                 <StatCard icon="check-circle" value={stats.completed} label="Completed" colorClass="stat-icon-green" />
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="wf-card mb-4">
+              <div className="card-body">
+                <h6 className="fw-bold text-primary-wf mb-3">
+                  <i className="bi bi-lightning-charge me-2"></i>Quick Actions
+                </h6>
+                <div className="d-flex gap-2 flex-wrap">
+                  <button
+                    className="btn btn-primary-wf"
+                    onClick={() => setActiveTab('post-job')}
+                  >
+                    <i className="bi bi-plus-circle me-2"></i>Post New Job
+                  </button>
+                  <button
+                    className="btn btn-outline-wf"
+                    onClick={() => setActiveTab('my-jobs')}
+                  >
+                    <i className="bi bi-briefcase me-2"></i>View All Jobs
+                  </button>
+                  <button
+                    className="btn btn-outline-wf"
+                    onClick={() => setActiveTab('applications')}
+                  >
+                    <i className="bi bi-people me-2"></i>View Applications
+                  </button>
+                </div>
               </div>
             </div>
 
